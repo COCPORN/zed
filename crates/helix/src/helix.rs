@@ -46,7 +46,7 @@ use workspace::{self, Workspace};
 
 use crate::state::ReplayableAction;
 
-/// Whether or not to enable Vim mode (work in progress).
+/// Whether or not to enable Helix mode (work in progress).
 ///
 /// Default: false
 pub struct HelixModeSetting(pub bool);
@@ -70,7 +70,7 @@ struct Number(usize);
 struct SelectRegister(String);
 
 actions!(
-    vim,
+    helix,
     [
         Tab,
         Enter,
@@ -85,7 +85,7 @@ actions!(
 // in the workspace namespace so it's not filtered out when vim is disabled.
 actions!(workspace, [ToggleVimMode]);
 
-impl_actions!(vim, [SwitchMode, PushOperator, Number, SelectRegister]);
+impl_actions!(helix, [SwitchMode, PushOperator, Number, SelectRegister]);
 
 /// Initializes the `vim` crate.
 pub fn init(cx: &mut AppContext) {
@@ -105,12 +105,12 @@ pub fn init(cx: &mut AppContext) {
     CommandPaletteFilter::update_global(cx, |filter, _| {
         filter.hide_namespace(Helix::NAMESPACE);
     });
-    Helix::update_global(cx, |vim, cx| {
-        vim.set_enabled(HelixModeSetting::get_global(cx).0, cx)
+    Helix::update_global(cx, |helix, cx| {
+        helix.set_enabled(HelixModeSetting::get_global(cx).0, cx)
     });
     cx.observe_global::<SettingsStore>(|cx| {
-        Helix::update_global(cx, |vim, cx| {
-            vim.set_enabled(HelixModeSetting::get_global(cx).0, cx)
+        Helix::update_global(cx, |helix, cx| {
+            helix.set_enabled(HelixModeSetting::get_global(cx).0, cx)
         });
     })
     .detach();
@@ -118,15 +118,15 @@ pub fn init(cx: &mut AppContext) {
 
 fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, &SwitchMode(mode): &SwitchMode, cx| {
-        Helix::update(cx, |vim, cx| vim.switch_mode(mode, false, cx))
+        Helix::update(cx, |helix, cx| helix.switch_mode(mode, false, cx))
     });
     workspace.register_action(
         |_: &mut Workspace, PushOperator(operator): &PushOperator, cx| {
-            Helix::update(cx, |vim, cx| vim.push_operator(operator.clone(), cx))
+            Helix::update(cx, |hx, cx| hx.push_operator(operator.clone(), cx))
         },
     );
     workspace.register_action(|_: &mut Workspace, n: &Number, cx: _| {
-        Helix::update(cx, |vim, cx| vim.push_count_digit(n.0, cx));
+        Helix::update(cx, |hx, cx| hx.push_count_digit(n.0, cx));
     });
     workspace.register_action(|_: &mut Workspace, _: &Tab, cx| {
         Helix::active_editor_input_ignored(" ".into(), cx)
@@ -170,21 +170,21 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
         .as_ref()
         .map(|action| action.boxed_clone())
     {
-        Helix::update(cx, |vim, _| {
-            if vim.workspace_state.recording {
-                vim.workspace_state
+        Helix::update(cx, |hx, _| {
+            if hx.workspace_state.recording {
+                hx.workspace_state
                     .recorded_actions
                     .push(ReplayableAction::Action(action.boxed_clone()));
 
-                if vim.workspace_state.stop_recording_after_next_action {
-                    vim.workspace_state.recording = false;
-                    vim.workspace_state.stop_recording_after_next_action = false;
+                if hx.workspace_state.stop_recording_after_next_action {
+                    hx.workspace_state.recording = false;
+                    hx.workspace_state.stop_recording_after_next_action = false;
                 }
             }
         });
 
-        // Keystroke is handled by the vim system, so continue forward
-        if action.name().starts_with("vim::") {
+        // Keystroke is handled by the helix system, so continue forward
+        if action.name().starts_with("helix::") {
             return;
         }
     } else if cx.has_pending_keystrokes() || keystroke_event.keystroke.is_ime_in_progress() {
