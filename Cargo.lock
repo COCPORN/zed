@@ -12447,6 +12447,7 @@ dependencies = [
  "extensions_ui",
  "fuzzy",
  "gpui",
+ "helix",
  "inline_completion_button",
  "install_cli",
  "picker",

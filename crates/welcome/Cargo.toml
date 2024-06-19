@@ -21,6 +21,7 @@ inline_completion_button.workspace = true
 db.workspace = true
 extensions_ui.workspace = true
 fuzzy.workspace = true
+helix.workspace = true
 gpui.workspace = true
 install_cli.workspace = true
 picker.workspace = true

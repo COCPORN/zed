@@ -8,6 +8,7 @@ use gpui::{
     ParentElement, Render, Styled, Subscription, Task, View, ViewContext, VisualContext, WeakView,
     WindowContext,
 };
+use helix::HelixModeSetting;
 use settings::{Settings, SettingsStore};
 use std::sync::Arc;
 use ui::{prelude::*, CheckboxWithLabel};
@@ -178,6 +179,29 @@ impl Render for WelcomePage {
                                     this.telemetry
                                         .report_app_event("welcome page: toggle vim".to_string());
                                     this.update_settings::<VimModeSetting>(
+                                        selection,
+                                        cx,
+                                        |setting, value| *setting = Some(value),
+                                    );
+                                    this.update_settings::<HelixModeSetting>(
+                                        selection,
+                                        cx,
+                                        |setting, value| *setting = Some(!value),
+                                    );
+                                }),
+                            ))
+                            .child(CheckboxWithLabel::new(
+                                "enable-helix",
+                                Label::new("Enable helix mode"),
+                                if HelixModeSetting::get_global(cx).0 {
+                                    ui::Selection::Selected
+                                } else {
+                                    ui::Selection::Unselected
+                                },
+                                cx.listener(move |this, selection, cx| {
+                                    this.telemetry
+                                        .report_app_event("welcome page: toggle helix".to_string());
+                                    this.update_settings::<HelixModeSetting>(
                                         selection,
                                         cx,
                                         |setting, value| *setting = Some(value),
