@@ -202,7 +202,7 @@ mod test {
     use crate::{
         state::Mode,
         test::{NeovimBackedTestContext, VimTestContext},
-        UseSystemClipboard, VimSettings,
+        HelixSettings, UseSystemClipboard,
     };
     use gpui::ClipboardItem;
     use indoc::indoc;
@@ -293,7 +293,7 @@ mod test {
         let mut cx = VimTestContext::new(cx, true).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::Never)
             });
         });
@@ -329,7 +329,7 @@ mod test {
         let mut cx = VimTestContext::new(cx, true).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::OnYank)
             });
         });
@@ -584,7 +584,7 @@ mod test {
         let mut cx = NeovimBackedTestContext::new(cx).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::Never)
             });
         });
@@ -630,7 +630,7 @@ mod test {
         let mut cx = NeovimBackedTestContext::new(cx).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::Never)
             });
         });
@@ -659,7 +659,7 @@ mod test {
         let mut cx = NeovimBackedTestContext::new(cx).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::Never)
             });
         });
@@ -707,7 +707,7 @@ mod test {
         let mut cx = VimTestContext::new(cx, true).await;
 
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_system_clipboard = Some(UseSystemClipboard::Never)
             });
         });

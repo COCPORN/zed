@@ -83,7 +83,7 @@ actions!(
 );
 
 // in the workspace namespace so it's not filtered out when vim is disabled.
-actions!(workspace, [ToggleVimMode]);
+actions!(workspace, [ToogleHelixMode]);
 
 impl_actions!(helix, [SwitchMode, PushOperator, Number, SelectRegister]);
 
@@ -91,7 +91,7 @@ impl_actions!(helix, [SwitchMode, PushOperator, Number, SelectRegister]);
 pub fn init(cx: &mut AppContext) {
     cx.set_global(Helix::default());
     HelixModeSetting::register(cx);
-    VimSettings::register(cx);
+    HelixSettings::register(cx);
 
     cx.observe_keystrokes(observe_keystrokes).detach();
     editor_events::init(cx);
@@ -136,7 +136,7 @@ fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
         Helix::active_editor_input_ignored("\n".into(), cx)
     });
 
-    workspace.register_action(|workspace: &mut Workspace, _: &ToggleVimMode, cx| {
+    workspace.register_action(|workspace: &mut Workspace, _: &ToogleHelixMode, cx| {
         let fs = workspace.app_state().fs.clone();
         let currently_enabled = HelixModeSetting::get_global(cx).0;
         update_settings_file::<HelixModeSetting>(fs, cx, move |setting| {
@@ -584,7 +584,7 @@ impl Helix {
                 }
             }
         } else {
-            let setting = VimSettings::get_global(cx).use_system_clipboard;
+            let setting = HelixSettings::get_global(cx).use_system_clipboard;
             if setting == UseSystemClipboard::Always
                 || setting == UseSystemClipboard::OnYank && is_yank
             {
@@ -625,7 +625,7 @@ impl Helix {
         cx: &mut WindowContext,
     ) -> Option<Register> {
         let Some(register) = register.filter(|reg| *reg != '"') else {
-            let setting = VimSettings::get_global(cx).use_system_clipboard;
+            let setting = HelixSettings::get_global(cx).use_system_clipboard;
             return match setting {
                 UseSystemClipboard::Always => cx.read_from_clipboard().map(|item| item.into()),
                 UseSystemClipboard::OnYank if self.system_clipboard_is_newer(cx) => {
@@ -821,12 +821,12 @@ impl Helix {
                 let find = Motion::FindForward {
                     before,
                     char: text.chars().next().unwrap(),
-                    mode: if VimSettings::get_global(cx).use_multiline_find {
+                    mode: if HelixSettings::get_global(cx).use_multiline_find {
                         FindRange::MultiLine
                     } else {
                         FindRange::SingleLine
                     },
-                    smartcase: VimSettings::get_global(cx).use_smartcase_find,
+                    smartcase: HelixSettings::get_global(cx).use_smartcase_find,
                 };
                 Helix::update(cx, |vim, _| {
                     vim.workspace_state.last_find = Some(find.clone())
@@ -837,12 +837,12 @@ impl Helix {
                 let find = Motion::FindBackward {
                     after,
                     char: text.chars().next().unwrap(),
-                    mode: if VimSettings::get_global(cx).use_multiline_find {
+                    mode: if HelixSettings::get_global(cx).use_multiline_find {
                         FindRange::MultiLine
                     } else {
                         FindRange::SingleLine
                     },
-                    smartcase: VimSettings::get_global(cx).use_smartcase_find,
+                    smartcase: HelixSettings::get_global(cx).use_smartcase_find,
                 };
                 Helix::update(cx, |vim, _| {
                     vim.workspace_state.last_find = Some(find.clone())
@@ -1028,7 +1028,7 @@ pub enum UseSystemClipboard {
 }
 
 #[derive(Deserialize)]
-struct VimSettings {
+struct HelixSettings {
     // all vim uses vim clipboard
     // vim always uses system cliupbaord
     // some magic where yy is system and dd is not.
@@ -1044,7 +1044,7 @@ struct VimSettingsContent {
     pub use_smartcase_find: Option<bool>,
 }
 
-impl Settings for VimSettings {
+impl Settings for HelixSettings {
     const KEY: Option<&'static str> = Some("vim");
 
     type FileContent = VimSettingsContent;

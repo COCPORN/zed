@@ -522,7 +522,7 @@ mod test {
         motion,
         state::Mode::{self},
         test::{NeovimBackedTestContext, VimTestContext},
-        VimSettings,
+        HelixSettings,
     };
 
     #[gpui::test]
@@ -1187,7 +1187,7 @@ mod test {
     async fn test_f_and_t_multiline(cx: &mut gpui::TestAppContext) {
         let mut cx = VimTestContext::new(cx, true).await;
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_multiline_find = Some(true);
             });
         });
@@ -1229,7 +1229,7 @@ mod test {
     async fn test_capital_f_and_capital_t_multiline(cx: &mut gpui::TestAppContext) {
         let mut cx = VimTestContext::new(cx, true).await;
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_multiline_find = Some(true);
             });
         });
@@ -1271,7 +1271,7 @@ mod test {
     async fn test_f_and_t_smartcase(cx: &mut gpui::TestAppContext) {
         let mut cx = VimTestContext::new(cx, true).await;
         cx.update_global(|store: &mut SettingsStore, cx| {
-            store.update_user_settings::<VimSettings>(cx, |s| {
+            store.update_user_settings::<HelixSettings>(cx, |s| {
                 s.use_smartcase_find = Some(true);
             });
         });
