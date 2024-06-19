@@ -191,7 +191,7 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
         return;
     }
 
-    Helix::update(cx, |vim, cx| match vim.active_operator() {
+    Helix::update(cx, |hx, cx| match hx.active_operator() {
         Some(
             Operator::FindForward { .. }
             | Operator::FindBackward { .. }
@@ -204,7 +204,7 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
             | Operator::Register,
         ) => {}
         Some(_) => {
-            vim.clear_operator(cx);
+            hx.clear_operator(cx);
         }
         _ => {}
     });
@@ -225,7 +225,7 @@ impl Global for Helix {}
 
 impl Helix {
     /// The namespace for Vim actions.
-    const NAMESPACE: &'static str = "vim";
+    const NAMESPACE: &'static str = "helix";
 
     fn read(cx: &mut AppContext) -> &Self {
         cx.global::<Self>()
@@ -285,7 +285,7 @@ impl Helix {
             self.switch_mode(Mode::Visual, true, cx);
         }
 
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
     }
 
     fn record_insertion(
@@ -426,7 +426,7 @@ impl Helix {
         }
 
         // Sync editor settings like clip mode
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
 
         if !mode.is_visual() && last_mode.is_visual() {
             create_visual_marks(self, last_mode, cx);
@@ -510,7 +510,7 @@ impl Helix {
             })
         }
         // update the keymap so that 0 works
-        self.sync_vim_settings(cx)
+        self.sync_helix_settings(cx)
     }
 
     fn take_count(&mut self, cx: &mut WindowContext) -> Option<usize> {
@@ -528,7 +528,7 @@ impl Helix {
         if self.workspace_state.recording {
             self.workspace_state.recorded_count = count;
         }
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
         count
     }
 
@@ -541,7 +541,7 @@ impl Helix {
             }
             state.operator_stack.clear();
         });
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
     }
 
     fn write_registers(
@@ -703,7 +703,7 @@ impl Helix {
             self.update_state(|state| state.operator_stack.clear());
         };
         self.update_state(|state| state.operator_stack.push(operator));
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
     }
 
     fn maybe_pop_operator(&mut self) -> Option<Operator> {
@@ -713,7 +713,7 @@ impl Helix {
     fn pop_operator(&mut self, cx: &mut WindowContext) -> Operator {
         let popped_operator = self.update_state(|state| state.operator_stack.pop())
             .expect("Operator popped when no operator was on the stack. This likely means there is an invalid keymap config");
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
         popped_operator
     }
 
@@ -723,7 +723,7 @@ impl Helix {
             state.selected_register.take();
             state.operator_stack.clear()
         });
-        self.sync_vim_settings(cx);
+        self.sync_helix_settings(cx);
     }
 
     fn active_operator(&self) -> Option<Operator> {
@@ -972,7 +972,7 @@ impl Helix {
         ret
     }
 
-    fn sync_vim_settings(&mut self, cx: &mut WindowContext) {
+    fn sync_helix_settings(&mut self, cx: &mut WindowContext) {
         self.update_active_editor(cx, |vim, editor, cx| {
             let state = vim.state();
             editor.set_cursor_shape(state.cursor_shape(), cx);

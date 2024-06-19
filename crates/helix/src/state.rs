@@ -324,7 +324,9 @@ impl Operator {
 
     pub fn context_flags(&self) -> &'static [&'static str] {
         match self {
-            Operator::Object { .. } | Operator::ChangeSurrounds { target: None } => &["VimObject"],
+            Operator::Object { .. } | Operator::ChangeSurrounds { target: None } => {
+                &["HelixObject"]
+            }
             Operator::FindForward { .. }
             | Operator::Mark
             | Operator::Jump { .. }
@@ -333,7 +335,7 @@ impl Operator {
             | Operator::Replace
             | Operator::AddSurrounds { target: Some(_) }
             | Operator::ChangeSurrounds { .. }
-            | Operator::DeleteSurrounds => &["VimWaiting"],
+            | Operator::DeleteSurrounds => &["HelixWaiting"],
             _ => &[],
         }
     }

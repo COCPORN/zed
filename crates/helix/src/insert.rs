@@ -18,7 +18,7 @@ fn normal_before(_: &mut Workspace, action: &NormalBefore, cx: &mut ViewContext<
     let should_repeat = Helix::update(cx, |vim, cx| {
         if vim.state().active_operator().is_some() {
             vim.update_state(|state| state.operator_stack.clear());
-            vim.sync_vim_settings(cx);
+            vim.sync_helix_settings(cx);
             return false;
         }
         let count = vim.take_count(cx).unwrap_or(1);
