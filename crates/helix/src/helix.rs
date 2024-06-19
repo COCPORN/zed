@@ -87,7 +87,7 @@ actions!(workspace, [ToogleHelixMode]);
 
 impl_actions!(helix, [SwitchMode, PushOperator, Number, SelectRegister]);
 
-/// Initializes the `vim` crate.
+/// Initializes the `helix` crate.
 pub fn init(cx: &mut AppContext) {
     cx.set_global(Helix::default());
     HelixModeSetting::register(cx);

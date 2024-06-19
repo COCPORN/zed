@@ -45,10 +45,10 @@ struct Word {
     ignore_punctuation: bool,
 }
 
-impl_actions!(vim, [Word]);
+impl_actions!(helix, [Word]);
 
 actions!(
-    vim,
+    helix,
     [
         Sentence,
         Paragraph,

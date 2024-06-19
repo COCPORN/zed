@@ -5,7 +5,7 @@ use workspace::Workspace;
 
 use crate::{state::Mode, Helix};
 
-actions!(vim, [ChangeListOlder, ChangeListNewer]);
+actions!(helix, [ChangeListOlder, ChangeListNewer]);
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_, _: &ChangeListOlder, cx| {

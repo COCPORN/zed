@@ -20,7 +20,7 @@ pub struct GoToLine {
     pub line: u32,
 }
 
-impl_actions!(vim, [GoToLine]);
+impl_actions!(helix, [GoToLine]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, action: &GoToLine, cx| {

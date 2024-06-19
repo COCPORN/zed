@@ -54,7 +54,7 @@ struct Replacement {
     range: Option<Range<usize>>,
 }
 
-actions!(vim, [SearchSubmit, MoveToNextMatch, MoveToPrevMatch]);
+actions!(helix, [SearchSubmit, MoveToNextMatch, MoveToPrevMatch]);
 impl_actions!(
     vim,
     [FindCommand, ReplaceCommand, Search, MoveToPrev, MoveToNext]

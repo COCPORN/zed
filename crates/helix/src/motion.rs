@@ -203,7 +203,7 @@ pub struct StartOfLine {
 }
 
 impl_actions!(
-    vim,
+    helix,
     [
         StartOfLine,
         EndOfLine,
@@ -222,7 +222,7 @@ impl_actions!(
 );
 
 actions!(
-    vim,
+    helix,
     [
         Left,
         Backspace,

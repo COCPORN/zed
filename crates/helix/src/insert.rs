@@ -8,7 +8,7 @@ use gpui::{actions, Action, ViewContext};
 use language::SelectionGoal;
 use workspace::Workspace;
 
-actions!(vim, [NormalBefore]);
+actions!(helix, [NormalBefore]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(normal_before);

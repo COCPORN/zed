@@ -8,7 +8,7 @@ use crate::{
 use gpui::{actions, Action, ViewContext, WindowContext};
 use workspace::Workspace;
 
-actions!(vim, [Repeat, EndRepeat]);
+actions!(helix, [Repeat, EndRepeat]);
 
 fn should_replay(action: &Box<dyn Action>) -> bool {
     // skip so that we don't leave the character palette open

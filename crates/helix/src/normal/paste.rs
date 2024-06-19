@@ -21,7 +21,7 @@ struct Paste {
     preserve_clipboard: bool,
 }
 
-impl_actions!(vim, [Paste]);
+impl_actions!(helix, [Paste]);
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(paste);

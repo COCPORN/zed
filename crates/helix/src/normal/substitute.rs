@@ -5,7 +5,7 @@ use workspace::Workspace;
 
 use crate::{motion::Motion, normal::yank::copy_selections_content, Helix, Mode};
 
-actions!(vim, [Substitute, SubstituteLine]);
+actions!(helix, [Substitute, SubstituteLine]);
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, _: &Substitute, cx| {

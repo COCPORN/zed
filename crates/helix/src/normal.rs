@@ -43,7 +43,7 @@ use self::{
 };
 
 actions!(
-    vim,
+    helix,
     [
         InsertAfter,
         InsertBefore,

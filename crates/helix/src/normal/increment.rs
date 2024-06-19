@@ -22,7 +22,7 @@ struct Decrement {
     step: bool,
 }
 
-impl_actions!(vim, [Increment, Decrement]);
+impl_actions!(helix, [Increment, Decrement]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, action: &Increment, cx| {

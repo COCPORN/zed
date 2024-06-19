@@ -24,7 +24,7 @@ use crate::{
 };
 
 actions!(
-    vim,
+    helix,
     [
         ToggleVisual,
         ToggleVisualLine,

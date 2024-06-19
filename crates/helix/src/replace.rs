@@ -10,7 +10,7 @@ use std::ops::Range;
 use std::sync::Arc;
 use workspace::Workspace;
 
-actions!(vim, [ToggleReplace, UndoReplace]);
+actions!(helix, [ToggleReplace, UndoReplace]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_, _: &ToggleReplace, cx: &mut ViewContext<Workspace>| {
