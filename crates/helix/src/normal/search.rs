@@ -56,7 +56,7 @@ struct Replacement {
 
 actions!(helix, [SearchSubmit, MoveToNextMatch, MoveToPrevMatch]);
 impl_actions!(
-    vim,
+    helix,
     [FindCommand, ReplaceCommand, Search, MoveToPrev, MoveToNext]
 );
 

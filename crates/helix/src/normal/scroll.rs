@@ -10,7 +10,7 @@ use settings::Settings;
 use workspace::Workspace;
 
 actions!(
-    vim,
+    helix,
     [LineUp, LineDown, ScrollUp, ScrollDown, PageUp, PageDown]
 );
 
