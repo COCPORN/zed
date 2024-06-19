@@ -36,6 +36,7 @@ use task::static_source::{StaticSource, TrackedFile};
 use theme::ActiveTheme;
 use workspace::notifications::NotificationId;
 
+use helix::HelixModeSetting;
 use paths::{local_settings_file_relative_path, local_tasks_file_relative_path};
 use terminal_view::terminal_panel::{self, TerminalPanel};
 use util::{asset_str, ResultExt};
@@ -139,6 +140,7 @@ pub fn initialize_workspace(app_state: Arc<AppState>, cx: &mut AppContext) {
         let active_buffer_language =
             cx.new_view(|_| language_selector::ActiveBufferLanguage::new(workspace));
         let vim_mode_indicator = cx.new_view(|cx| vim::ModeIndicator::new(cx));
+        let helix_mode_indicator = cx.new_view(|cx| helix::ModeIndicator::new(cx));
         let cursor_position =
             cx.new_view(|_| go_to_line::cursor_position::CursorPosition::new(workspace));
         workspace.status_bar().update(cx, |status_bar, cx| {
@@ -147,6 +149,7 @@ pub fn initialize_workspace(app_state: Arc<AppState>, cx: &mut AppContext) {
             status_bar.add_right_item(inline_completion_button, cx);
             status_bar.add_right_item(active_buffer_language, cx);
             status_bar.add_right_item(vim_mode_indicator, cx);
+            status_bar.add_right_item(helix_mode_indicator, cx);
             status_bar.add_right_item(cursor_position, cx);
         });
 
@@ -667,17 +670,24 @@ pub fn handle_keymap_file_changes(
 ) {
     BaseKeymap::register(cx);
     VimModeSetting::register(cx);
+    HelixModeSetting::register(cx);
 
     let (base_keymap_tx, mut base_keymap_rx) = mpsc::unbounded();
     let mut old_base_keymap = *BaseKeymap::get_global(cx);
     let mut old_vim_enabled = VimModeSetting::get_global(cx).0;
+    let mut old_helix_enabled = HelixModeSetting::get_global(cx).0;
     cx.observe_global::<SettingsStore>(move |cx| {
         let new_base_keymap = *BaseKeymap::get_global(cx);
         let new_vim_enabled = VimModeSetting::get_global(cx).0;
+        let new_helix_enabled = HelixModeSetting::get_global(cx).0;
 
-        if new_base_keymap != old_base_keymap || new_vim_enabled != old_vim_enabled {
+        if new_base_keymap != old_base_keymap
+            || new_vim_enabled != old_vim_enabled
+            || new_helix_enabled != old_helix_enabled
+        {
             old_base_keymap = new_base_keymap;
             old_vim_enabled = new_vim_enabled;
+            old_helix_enabled = new_helix_enabled;
             base_keymap_tx.unbounded_send(()).unwrap();
         }
     })
@@ -723,6 +733,10 @@ pub fn load_default_keymap(cx: &mut AppContext) {
     KeymapFile::load_asset(DEFAULT_KEYMAP_PATH, cx).unwrap();
     if VimModeSetting::get_global(cx).0 {
         KeymapFile::load_asset("keymaps/vim.json", cx).unwrap();
+    }
+
+    if HelixModeSetting::get_global(cx).0 {
+        KeymapFile::load_asset("keymaps/helix.json", cx).unwrap();
     }
 
     if let Some(asset_path) = base_keymap.asset_path() {

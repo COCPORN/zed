@@ -1038,16 +1038,16 @@ struct HelixSettings {
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, JsonSchema)]
-struct VimSettingsContent {
+struct HelixSettingsContent {
     pub use_system_clipboard: Option<UseSystemClipboard>,
     pub use_multiline_find: Option<bool>,
     pub use_smartcase_find: Option<bool>,
 }
 
 impl Settings for HelixSettings {
-    const KEY: Option<&'static str> = Some("vim");
+    const KEY: Option<&'static str> = Some("helix");
 
-    type FileContent = VimSettingsContent;
+    type FileContent = HelixSettingsContent;
 
     fn load(sources: SettingsSources<Self::FileContent>, _: &mut AppContext) -> Result<Self> {
         sources.json_merge()
