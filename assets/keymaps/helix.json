@@ -1,0 +1,706 @@
+[
+  {
+    "context": "ProjectPanel || Editor",
+    "bindings": {
+      "ctrl-6": "pane::AlternateFile"
+    }
+  },
+  {
+    "context": "Editor && HelixControl && !HelixWaiting && !menu",
+    "bindings": {
+      "i": [
+        "Helix::PushOperator",
+        {
+          "Object": {
+            "around": false
+          }
+        }
+      ],
+      "a": [
+        "Helix::PushOperator",
+        {
+          "Object": {
+            "around": true
+          }
+        }
+      ],
+      ":": "command_palette::Toggle",
+      "h": "Helix::Left",
+      "left": "Helix::Left",
+      "backspace": "Helix::Backspace",
+      "j": "Helix::Down",
+      "down": "Helix::Down",
+      "enter": "Helix::NextLineStart",
+      "tab": "Helix::Tab",
+      "shift-tab": "Helix::Tab",
+      "k": "Helix::Up",
+      "up": "Helix::Up",
+      "l": "Helix::Right",
+      "right": "Helix::Right",
+      "space": "Helix::Space",
+      "$": "Helix::EndOfLine",
+      "end": "Helix::EndOfLine",
+      "^": "Helix::FirstNonWhitespace",
+      "_": "Helix::StartOfLineDownward",
+      "g _": "Helix::EndOfLineDownward",
+      "shift-g": "Helix::EndOfDocument",
+      "{": "Helix::StartOfParagraph",
+      "}": "Helix::EndOfParagraph",
+      "|": "Helix::GoToColumn",
+
+      // Word motions
+      "w": "Helix::NextWordStart",
+      "e": "Helix::NextWordEnd",
+      "b": "Helix::PreviousWordStart",
+      "g e": "Helix::PreviousWordEnd",
+
+      // Subword motions
+      // "w": "Helix::NextSubwordStart",
+      // "b": "Helix::PreviousSubwordStart",
+      // "e": "Helix::NextSubwordEnd",
+      // "g e": "Helix::PreviousSubwordEnd",
+
+      "shift-w": [
+        "Helix::NextWordStart",
+        {
+          "ignorePunctuation": true
+        }
+      ],
+      "shift-e": [
+        "Helix::NextWordEnd",
+        {
+          "ignorePunctuation": true
+        }
+      ],
+      "shift-b": [
+        "Helix::PreviousWordStart",
+        {
+          "ignorePunctuation": true
+        }
+      ],
+      "g shift-e": ["Helix::PreviousWordEnd", { "ignorePunctuation": true }],
+
+      "/": "Helix::Search",
+      "g /": "pane::DeploySearch",
+      "?": [
+        "Helix::Search",
+        {
+          "backwards": true
+        }
+      ],
+      "*": "Helix::MoveToNext",
+      "#": "Helix::MoveToPrev",
+      "n": "Helix::MoveToNextMatch",
+      "shift-n": "Helix::MoveToPrevMatch",
+      "%": "Helix::Matching",
+      "f": [
+        "Helix::PushOperator",
+        {
+          "FindForward": {
+            "before": false
+          }
+        }
+      ],
+      "t": [
+        "Helix::PushOperator",
+        {
+          "FindForward": {
+            "before": true
+          }
+        }
+      ],
+      "shift-f": [
+        "Helix::PushOperator",
+        {
+          "FindBackward": {
+            "after": false
+          }
+        }
+      ],
+      "shift-t": [
+        "Helix::PushOperator",
+        {
+          "FindBackward": {
+            "after": true
+          }
+        }
+      ],
+      "m": ["Helix::PushOperator", "Mark"],
+      "'": ["Helix::PushOperator", { "Jump": { "line": true } }],
+      "`": ["Helix::PushOperator", { "Jump": { "line": false } }],
+      ";": "Helix::RepeatFind",
+      ",": "Helix::RepeatFindReversed",
+      "ctrl-o": "pane::GoBack",
+      "ctrl-i": "pane::GoForward",
+      "ctrl-]": "editor::GoToDefinition",
+      "escape": ["Helix::SwitchMode", "Normal"],
+      "ctrl-[": ["Helix::SwitchMode", "Normal"],
+      "v": "Helix::ToggleVisual",
+      "shift-v": "Helix::ToggleVisualLine",
+      "ctrl-v": "Helix::ToggleVisualBlock",
+      "ctrl-q": "Helix::ToggleVisualBlock",
+      "shift-k": "editor::Hover",
+      "shift-r": "Helix::ToggleReplace",
+      "0": "Helix::StartOfLine",
+      "home": "Helix::StartOfLine",
+      "ctrl-f": "Helix::PageDown",
+      "pagedown": "Helix::PageDown",
+      "ctrl-b": "Helix::PageUp",
+      "pageup": "Helix::PageUp",
+      "ctrl-d": "Helix::ScrollDown",
+      "ctrl-u": "Helix::ScrollUp",
+      "ctrl-e": "Helix::LineDown",
+      "ctrl-y": "Helix::LineUp",
+      // "g" commands
+      "g g": "Helix::StartOfDocument",
+      "g h": "editor::Hover",
+      "g t": "pane::ActivateNextItem",
+      "g shift-t": "pane::ActivatePrevItem",
+      "g d": "editor::GoToDefinition",
+      "g shift-d": "editor::GoToTypeDefinition",
+      "g cmd-d": "editor::GoToImplementation",
+      "g x": "editor::OpenUrl",
+      "g n": "Helix::SelectNextMatch",
+      "g shift-n": "Helix::SelectPreviousMatch",
+      "g l": "Helix::SelectNext",
+      "g shift-l": "Helix::SelectPrevious",
+      "g >": [
+        "editor::SelectNext",
+        {
+          "replace_newest": true
+        }
+      ],
+      "g <": [
+        "editor::SelectPrevious",
+        {
+          "replace_newest": true
+        }
+      ],
+      "g a": "editor::SelectAllMatches",
+      "g s": "outline::Toggle",
+      "g shift-s": "project_symbols::Toggle",
+      "g .": "editor::ToggleCodeActions", // zed specific
+      "g shift-a": "editor::FindAllReferences", // zed specific
+      "g space": "editor::OpenExcerpts", // zed specific
+      "g *": [
+        "Helix::MoveToNext",
+        {
+          "partialWord": true
+        }
+      ],
+      "g #": [
+        "Helix::MoveToPrev",
+        {
+          "partialWord": true
+        }
+      ],
+      "g j": [
+        "Helix::Down",
+        {
+          "displayLines": true
+        }
+      ],
+      "g down": [
+        "Helix::Down",
+        {
+          "displayLines": true
+        }
+      ],
+      "g k": [
+        "Helix::Up",
+        {
+          "displayLines": true
+        }
+      ],
+      "g up": [
+        "Helix::Up",
+        {
+          "displayLines": true
+        }
+      ],
+      "g $": [
+        "Helix::EndOfLine",
+        {
+          "displayLines": true
+        }
+      ],
+      "g end": [
+        "Helix::EndOfLine",
+        {
+          "displayLines": true
+        }
+      ],
+      "g 0": [
+        "Helix::StartOfLine",
+        {
+          "displayLines": true
+        }
+      ],
+      "g home": [
+        "Helix::StartOfLine",
+        {
+          "displayLines": true
+        }
+      ],
+      "g ^": [
+        "Helix::FirstNonWhitespace",
+        {
+          "displayLines": true
+        }
+      ],
+      "g v": "Helix::RestoreVisualSelection",
+      "g ]": "editor::GoToDiagnostic",
+      "g [": "editor::GoToPrevDiagnostic",
+      "g i": "Helix::InsertAtPrevious",
+      "g ,": "Helix::ChangeListNewer",
+      "g ;": "Helix::ChangeListOlder",
+      "shift-h": "Helix::WindowTop",
+      "shift-m": "Helix::WindowMiddle",
+      "shift-l": "Helix::WindowBottom",
+      // z commands
+      "z t": "editor::ScrollCursorTop",
+      "z z": "editor::ScrollCursorCenter",
+      "z .": ["workspace::SendKeystrokes", "z z ^"],
+      "z b": "editor::ScrollCursorBottom",
+      "z c": "editor::Fold",
+      "z o": "editor::UnfoldLines",
+      "z f": "editor::FoldSelectedRanges",
+      "shift-z shift-q": [
+        "pane::CloseActiveItem",
+        {
+          "saveIntent": "skip"
+        }
+      ],
+      "shift-z shift-z": [
+        "pane::CloseActiveItem",
+        {
+          "saveIntent": "saveAll"
+        }
+      ],
+      // Count support
+      "1": ["Helix::Number", 1],
+      "2": ["Helix::Number", 2],
+      "3": ["Helix::Number", 3],
+      "4": ["Helix::Number", 4],
+      "5": ["Helix::Number", 5],
+      "6": ["Helix::Number", 6],
+      "7": ["Helix::Number", 7],
+      "8": ["Helix::Number", 8],
+      "9": ["Helix::Number", 9],
+      // window related commands (ctrl-w X)
+      "ctrl-w left": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-w right": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-w up": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-w down": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-w h": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-w l": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-w k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-w j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-w ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-w ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-w ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-w ctrl-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-w shift-left": ["workspace::SwapPaneInDirection", "Left"],
+      "ctrl-w shift-right": ["workspace::SwapPaneInDirection", "Right"],
+      "ctrl-w shift-up": ["workspace::SwapPaneInDirection", "Up"],
+      "ctrl-w shift-down": ["workspace::SwapPaneInDirection", "Down"],
+      "ctrl-w shift-h": ["workspace::SwapPaneInDirection", "Left"],
+      "ctrl-w shift-l": ["workspace::SwapPaneInDirection", "Right"],
+      "ctrl-w shift-k": ["workspace::SwapPaneInDirection", "Up"],
+      "ctrl-w shift-j": ["workspace::SwapPaneInDirection", "Down"],
+      "ctrl-w g t": "pane::ActivateNextItem",
+      "ctrl-w ctrl-g t": "pane::ActivateNextItem",
+      "ctrl-w g shift-t": "pane::ActivatePrevItem",
+      "ctrl-w ctrl-g shift-t": "pane::ActivatePrevItem",
+      "ctrl-w w": "workspace::ActivateNextPane",
+      "ctrl-w ctrl-w": "workspace::ActivateNextPane",
+      "ctrl-w p": "workspace::ActivatePreviousPane",
+      "ctrl-w ctrl-p": "workspace::ActivatePreviousPane",
+      "ctrl-w shift-w": "workspace::ActivatePreviousPane",
+      "ctrl-w ctrl-shift-w": "workspace::ActivatePreviousPane",
+      "ctrl-w v": "pane::SplitLeft",
+      "ctrl-w ctrl-v": "pane::SplitLeft",
+      "ctrl-w s": "pane::SplitUp",
+      "ctrl-w shift-s": "pane::SplitUp",
+      "ctrl-w ctrl-s": "pane::SplitUp",
+      "ctrl-w c": "pane::CloseAllItems",
+      "ctrl-w ctrl-c": "pane::CloseAllItems",
+      "ctrl-w q": "pane::CloseAllItems",
+      "ctrl-w ctrl-q": "pane::CloseAllItems",
+      "ctrl-w o": "workspace::CloseInactiveTabsAndPanes",
+      "ctrl-w ctrl-o": "workspace::CloseInactiveTabsAndPanes",
+      "ctrl-w n": ["workspace::NewFileInDirection", "Up"],
+      "ctrl-w ctrl-n": ["workspace::NewFileInDirection", "Up"],
+
+      "ctrl-w d": "editor::GoToDefinitionSplit",
+      "ctrl-w g d": "editor::GoToDefinitionSplit",
+      "ctrl-w shift-d": "editor::GoToTypeDefinitionSplit",
+      "ctrl-w g shift-d": "editor::GoToTypeDefinitionSplit",
+      "ctrl-w space": "editor::OpenExcerptsSplit",
+      "ctrl-w g space": "editor::OpenExcerptsSplit",
+      "-": "pane::RevealInProjectPanel"
+    }
+  },
+  {
+    // escape is in its own section so that it cancels a pending count.
+    "context": "Editor && helix_mode == normal && Helix_operator == none && !HelixWaiting",
+    "bindings": {
+      "escape": "editor::Cancel",
+      "ctrl-[": "editor::Cancel"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == normal && Helix_operator == none && !HelixWaiting",
+    "bindings": {
+      ".": "Helix::Repeat",
+      "c": ["Helix::PushOperator", "Change"],
+      "shift-c": "Helix::ChangeToEndOfLine",
+      "d": ["Helix::PushOperator", "Delete"],
+      "shift-d": "Helix::DeleteToEndOfLine",
+      "shift-j": "Helix::JoinLines",
+      "y": ["Helix::PushOperator", "Yank"],
+      "shift-y": "Helix::YankLine",
+      "i": "Helix::InsertBefore",
+      "shift-i": "Helix::InsertFirstNonWhitespace",
+      "a": "Helix::InsertAfter",
+      "shift-a": "Helix::InsertEndOfLine",
+      "x": "Helix::DeleteRight",
+      "shift-x": "Helix::DeleteLeft",
+      "o": "Helix::InsertLineBelow",
+      "shift-o": "Helix::InsertLineAbove",
+      "~": "Helix::ChangeCase",
+      "ctrl-a": "Helix::Increment",
+      "ctrl-x": "Helix::Decrement",
+      "p": "Helix::Paste",
+      "shift-p": [
+        "Helix::Paste",
+        {
+          "before": true
+        }
+      ],
+      "u": "editor::Undo",
+      "ctrl-r": "editor::Redo",
+      "r": ["Helix::PushOperator", "Replace"],
+      "s": "Helix::Substitute",
+      "shift-s": "Helix::SubstituteLine",
+      ">": ["Helix::PushOperator", "Indent"],
+      "<": ["Helix::PushOperator", "Outdent"],
+      "g u": ["Helix::PushOperator", "Lowercase"],
+      "g shift-u": ["Helix::PushOperator", "Uppercase"],
+      "g ~": ["Helix::PushOperator", "OppositeCase"],
+      "\"": ["Helix::PushOperator", "Register"],
+      "ctrl-pagedown": "pane::ActivateNextItem",
+      "ctrl-pageup": "pane::ActivatePrevItem",
+      // tree-sitter related commands
+      "[ x": "editor::SelectLargerSyntaxNode",
+      "] x": "editor::SelectSmallerSyntaxNode",
+      "] d": "editor::GoToDiagnostic",
+      "[ d": "editor::GoToPrevDiagnostic",
+      "] c": "editor::GoToHunk",
+      "[ c": "editor::GoToPrevHunk"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == visual && Helix_operator == none && !HelixWaiting",
+    "bindings": {
+      "\"": ["Helix::PushOperator", "Register"],
+      // tree-sitter related commands
+      "[ x": "editor::SelectLargerSyntaxNode",
+      "] x": "editor::SelectSmallerSyntaxNode"
+    }
+  },
+  {
+    "context": "Editor && HelixCount && helix_mode != insert",
+    "bindings": {
+      "0": ["Helix::Number", 0]
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == c",
+    "bindings": {
+      "c": "Helix::CurrentLine",
+      "d": "editor::Rename" // zed specific
+    }
+  },
+  {
+    "context": "Editor && helix_mode == normal && Helix_operator == c",
+    "bindings": {
+      "s": [
+        "Helix::PushOperator",
+        {
+          "ChangeSurrounds": {}
+        }
+      ]
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == d",
+    "bindings": {
+      "d": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == gu",
+    "bindings": {
+      "g u": "Helix::CurrentLine",
+      "u": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == gU",
+    "bindings": {
+      "g shift-u": "Helix::CurrentLine",
+      "shift-u": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == g~",
+    "bindings": {
+      "g ~": "Helix::CurrentLine",
+      "~": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == normal && Helix_operator == d",
+    "bindings": {
+      "s": ["Helix::PushOperator", "DeleteSurrounds"]
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == y",
+    "bindings": {
+      "y": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == normal && Helix_operator == y",
+    "bindings": {
+      "s": [
+        "Helix::PushOperator",
+        {
+          "AddSurrounds": {}
+        }
+      ]
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == ys",
+    "bindings": {
+      "s": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == >",
+    "bindings": {
+      ">": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && Helix_operator == <",
+    "bindings": {
+      "<": "Helix::CurrentLine"
+    }
+  },
+  {
+    "context": "Editor && HelixObject",
+    "bindings": {
+      "w": "Helix::Word",
+      "shift-w": [
+        "Helix::Word",
+        {
+          "ignorePunctuation": true
+        }
+      ],
+      "t": "Helix::Tag",
+      "s": "Helix::Sentence",
+      "p": "Helix::Paragraph",
+      "'": "Helix::Quotes",
+      "`": "Helix::BackQuotes",
+      "\"": "Helix::DoubleQuotes",
+      "|": "Helix::VerticalBars",
+      "(": "Helix::Parentheses",
+      ")": "Helix::Parentheses",
+      "b": "Helix::Parentheses",
+      "[": "Helix::SquareBrackets",
+      "]": "Helix::SquareBrackets",
+      "{": "Helix::CurlyBrackets",
+      "}": "Helix::CurlyBrackets",
+      "shift-b": "Helix::CurlyBrackets",
+      "<": "Helix::AngleBrackets",
+      ">": "Helix::AngleBrackets",
+      "a": "Helix::Argument"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == visual && !HelixWaiting && !HelixObject",
+    "bindings": {
+      "u": "Helix::ConvertToLowerCase",
+      "U": "Helix::ConvertToUpperCase",
+      "o": "Helix::OtherEnd",
+      "shift-o": "Helix::OtherEnd",
+      "d": "Helix::VisualDelete",
+      "x": "Helix::VisualDelete",
+      "shift-d": "Helix::VisualDeleteLine",
+      "shift-x": "Helix::VisualDeleteLine",
+      "y": "Helix::VisualYank",
+      "shift-y": "Helix::VisualYank",
+      "p": "Helix::Paste",
+      "shift-p": [
+        "Helix::Paste",
+        {
+          "preserveClipboard": true
+        }
+      ],
+      "s": "Helix::Substitute",
+      "shift-s": "Helix::SubstituteLine",
+      "shift-r": "Helix::SubstituteLine",
+      "c": "Helix::Substitute",
+      "~": "Helix::ChangeCase",
+      "*": [
+        "Helix::MoveToNext",
+        {
+          "partialWord": true
+        }
+      ],
+      "#": [
+        "Helix::MoveToPrev",
+        {
+          "partialWord": true
+        }
+      ],
+      "ctrl-a": "Helix::Increment",
+      "ctrl-x": "Helix::Decrement",
+      "g ctrl-a": [
+        "Helix::Increment",
+        {
+          "step": true
+        }
+      ],
+      "g ctrl-x": [
+        "Helix::Decrement",
+        {
+          "step": true
+        }
+      ],
+      "shift-i": "Helix::InsertBefore",
+      "shift-a": "Helix::InsertAfter",
+      "shift-j": "Helix::JoinLines",
+      "r": ["Helix::PushOperator", "Replace"],
+      "ctrl-c": ["Helix::SwitchMode", "Normal"],
+      "escape": ["Helix::SwitchMode", "Normal"],
+      "ctrl-[": ["Helix::SwitchMode", "Normal"],
+      ">": "Helix::Indent",
+      "<": "Helix::Outdent",
+      "i": [
+        "Helix::PushOperator",
+        {
+          "Object": {
+            "around": false
+          }
+        }
+      ],
+      "a": [
+        "Helix::PushOperator",
+        {
+          "Object": {
+            "around": true
+          }
+        }
+      ]
+    }
+  },
+  {
+    "context": "Editor && helix_mode == normal && !HelixWaiting",
+    "bindings": {
+      "g c c": "editor::ToggleComments"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == visual",
+    "bindings": {
+      "g c": "editor::ToggleComments"
+    }
+  },
+  {
+    "context": "Editor && helix_mode == insert",
+    "bindings": {
+      "escape": "Helix::NormalBefore",
+      "ctrl-c": "Helix::NormalBefore",
+      "ctrl-[": "Helix::NormalBefore",
+      "ctrl-x ctrl-o": "editor::ShowCompletions",
+      "ctrl-x ctrl-a": "assistant::InlineAssist", // zed specific
+      "ctrl-x ctrl-c": "editor::ShowInlineCompletion", // zed specific
+      "ctrl-x ctrl-l": "editor::ToggleCodeActions", // zed specific
+      "ctrl-x ctrl-z": "editor::Cancel",
+      "ctrl-w": "editor::DeleteToPreviousWordStart",
+      "ctrl-u": "editor::DeleteToBeginningOfLine",
+      "ctrl-t": "Helix::Indent",
+      "ctrl-d": "Helix::Outdent",
+      "ctrl-r": ["Helix::PushOperator", "Register"]
+    }
+  },
+  {
+    "context": "Editor && helix_mode == replace",
+    "bindings": {
+      "escape": "Helix::NormalBefore",
+      "ctrl-c": "Helix::NormalBefore",
+      "ctrl-[": "Helix::NormalBefore",
+      "backspace": "Helix::UndoReplace"
+    }
+  },
+  {
+    "context": "Editor && HelixWaiting",
+    "bindings": {
+      "tab": "Helix::Tab",
+      "enter": "Helix::Enter",
+      "escape": ["Helix::SwitchMode", "Normal"],
+      "ctrl-[": ["Helix::SwitchMode", "Normal"]
+    }
+  },
+  {
+    "context": "Editor && helix_mode == insert && HelixWaiting",
+    "bindings": {
+      "escape": "Helix::NormalBefore",
+      "ctrl-[": "Helix::NormalBefore"
+    }
+  },
+  {
+    "context": "BufferSearchBar && !in_replace",
+    "bindings": {
+      "enter": "Helix::SearchSubmit",
+      "escape": "buffer_search::Dismiss"
+    }
+  },
+  {
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      ":": "command_palette::Toggle"
+    }
+  },
+  {
+    // netrw compatibility
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      ":": "command_palette::Toggle",
+      "%": "project_panel::NewFile",
+      "/": "project_panel::NewSearchInDirectory",
+      "d": "project_panel::NewDirectory",
+      "enter": "project_panel::OpenPermanent",
+      "escape": "project_panel::ToggleFocus",
+      "h": "project_panel::CollapseSelectedEntry",
+      "j": "menu::SelectNext",
+      "k": "menu::SelectPrev",
+      "l": "project_panel::ExpandSelectedEntry",
+      "o": "project_panel::OpenPermanent",
+      "shift-d": "project_panel::Delete",
+      "shift-r": "project_panel::Rename",
+      "t": "project_panel::OpenPermanent",
+      "v": "project_panel::OpenPermanent",
+      "p": "project_panel::Open",
+      "x": "project_panel::RevealInFinder",
+      "shift-g": "menu::SelectLast",
+      "g g": "menu::SelectFirst",
+      "-": "project_panel::SelectParent"
+    }
+  }
+]

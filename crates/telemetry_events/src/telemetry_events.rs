@@ -71,6 +71,7 @@ pub struct EditorEvent {
     pub operation: String,
     pub file_extension: Option<String>,
     pub vim_mode: bool,
+    pub helix_mode: bool,
     pub copilot_enabled: bool,
     pub copilot_enabled_for_language: bool,
 }

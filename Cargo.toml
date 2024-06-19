@@ -193,6 +193,7 @@ google_ai = { path = "crates/google_ai" }
 gpui = { path = "crates/gpui" }
 gpui_macros = { path = "crates/gpui_macros" }
 headless = { path = "crates/headless" }
+helix = { path = "crates/helix" }
 html_to_markdown = { path = "crates/html_to_markdown" }
 http = { path = "crates/http" }
 install_cli = { path = "crates/install_cli" }

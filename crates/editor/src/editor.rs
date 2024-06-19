@@ -11219,6 +11219,12 @@ impl Editor {
             .get("vim_mode")
             == Some(&serde_json::Value::Bool(true));
 
+        let helix_mode = cx
+            .global::<SettingsStore>()
+            .raw_user_settings()
+            .get("helix_mode")
+            == Some(&serde_json::Value::Bool(true));
+
         let copilot_enabled = all_language_settings(file, cx).inline_completions.provider
             == language::language_settings::InlineCompletionProvider::Copilot;
         let copilot_enabled_for_language = self
@@ -11231,6 +11237,7 @@ impl Editor {
         telemetry.report_editor_event(
             file_extension,
             vim_mode,
+            helix_mode,
             operation,
             copilot_enabled,
             copilot_enabled_for_language,

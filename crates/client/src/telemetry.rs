@@ -347,6 +347,7 @@ impl Telemetry {
         self: &Arc<Self>,
         file_extension: Option<String>,
         vim_mode: bool,
+        helix_mode: bool,
         operation: &'static str,
         copilot_enabled: bool,
         copilot_enabled_for_language: bool,
@@ -354,6 +355,7 @@ impl Telemetry {
         let event = Event::Editor(EditorEvent {
             file_extension,
             vim_mode,
+            helix_mode,
             operation: operation.into(),
             copilot_enabled,
             copilot_enabled_for_language,
