@@ -217,7 +217,7 @@ impl EditorState {
         }
     }
 
-    pub fn vim_controlled(&self) -> bool {
+    pub fn helix_controlled(&self) -> bool {
         let is_insert_mode = matches!(self.mode, Mode::Insert);
         if !is_insert_mode {
             return true;
@@ -252,7 +252,7 @@ impl EditorState {
     pub fn keymap_context_layer(&self) -> KeyContext {
         let mut context = KeyContext::new_with_defaults();
         context.set(
-            "vim_mode",
+            "helix_mode",
             match self.mode {
                 Mode::Normal => "normal",
                 Mode::Visual | Mode::VisualLine | Mode::VisualBlock => "visual",
@@ -261,14 +261,14 @@ impl EditorState {
             },
         );
 
-        if self.vim_controlled() {
-            context.add("VimControl");
+        if self.helix_controlled() {
+            context.add("HelixControl");
         }
 
         if self.active_operator().is_none() && self.pre_count.is_some()
             || self.active_operator().is_some() && self.post_count.is_some()
         {
-            context.add("VimCount");
+            context.add("HelixCount");
         }
 
         let active_operator = self.active_operator();
@@ -280,7 +280,7 @@ impl EditorState {
         }
 
         context.set(
-            "vim_operator",
+            "helix_operator",
             active_operator
                 .clone()
                 .map(|op| op.id())
@@ -288,7 +288,7 @@ impl EditorState {
         );
 
         if self.mode == Mode::Replace {
-            context.add("VimWaiting");
+            context.add("HelixWaiting");
         }
         context
     }
