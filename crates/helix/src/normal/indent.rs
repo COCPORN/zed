@@ -1,4 +1,4 @@
-use crate::{motion::Motion, object::Object, Vim};
+use crate::{motion::Motion, object::Object, Helix};
 use collections::HashMap;
 use editor::{display_map::ToDisplayPoint, Bias};
 use gpui::WindowContext;
@@ -11,7 +11,7 @@ pub(super) enum IndentDirection {
 }
 
 pub fn indent_motion(
-    vim: &mut Vim,
+    vim: &mut Helix,
     motion: Motion,
     times: Option<usize>,
     dir: IndentDirection,
@@ -45,7 +45,7 @@ pub fn indent_motion(
 }
 
 pub fn indent_object(
-    vim: &mut Vim,
+    vim: &mut Helix,
     object: Object,
     around: bool,
     dir: IndentDirection,

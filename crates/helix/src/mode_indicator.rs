@@ -2,7 +2,7 @@ use gpui::{div, Element, Render, Subscription, ViewContext};
 use itertools::Itertools;
 use workspace::{item::ItemHandle, ui::prelude::*, StatusItemView};
 
-use crate::{state::Mode, Vim};
+use crate::{state::Mode, Helix};
 
 /// The ModeIndicator displays the current mode in the status bar.
 pub struct ModeIndicator {
@@ -16,7 +16,7 @@ impl ModeIndicator {
     /// Construct a new mode indicator in this window.
     pub fn new(cx: &mut ViewContext<Self>) -> Self {
         let _subscriptions = vec![
-            cx.observe_global::<Vim>(|this, cx| this.update_mode(cx)),
+            cx.observe_global::<Helix>(|this, cx| this.update_mode(cx)),
             cx.observe_pending_input(|this, cx| {
                 this.update_pending_keys(cx);
                 cx.notify();
@@ -55,12 +55,12 @@ impl ModeIndicator {
         }
     }
 
-    fn vim<'a>(&self, cx: &'a mut ViewContext<Self>) -> Option<&'a Vim> {
+    fn vim<'a>(&self, cx: &'a mut ViewContext<Self>) -> Option<&'a Helix> {
         // In some tests Vim isn't enabled, so we use try_global.
-        cx.try_global::<Vim>().filter(|vim| vim.enabled)
+        cx.try_global::<Helix>().filter(|vim| vim.enabled)
     }
 
-    fn current_operators_description(&self, vim: &Vim) -> String {
+    fn current_operators_description(&self, vim: &Helix) -> String {
         vim.state()
             .pre_count
             .map(|count| format!("{}", count))

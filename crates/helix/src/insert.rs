@@ -1,7 +1,7 @@
 use crate::{
     normal::{mark::create_mark, repeat},
     state::Mode,
-    Vim,
+    Helix,
 };
 use editor::{scroll::Autoscroll, Bias};
 use gpui::{actions, Action, ViewContext};
@@ -15,7 +15,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
 }
 
 fn normal_before(_: &mut Workspace, action: &NormalBefore, cx: &mut ViewContext<Workspace>) {
-    let should_repeat = Vim::update(cx, |vim, cx| {
+    let should_repeat = Helix::update(cx, |vim, cx| {
         if vim.state().active_operator().is_some() {
             vim.update_state(|state| state.operator_stack.clear());
             vim.sync_vim_settings(cx);

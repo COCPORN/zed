@@ -3,13 +3,13 @@ use gpui::{actions, ViewContext, WindowContext};
 use language::Point;
 use workspace::Workspace;
 
-use crate::{motion::Motion, normal::yank::copy_selections_content, Mode, Vim};
+use crate::{motion::Motion, normal::yank::copy_selections_content, Helix, Mode};
 
 actions!(vim, [Substitute, SubstituteLine]);
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, _: &Substitute, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.start_recording(cx);
             let count = vim.take_count(cx);
             substitute(vim, count, vim.state().mode == Mode::VisualLine, cx);
@@ -17,7 +17,7 @@ pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>
     });
 
     workspace.register_action(|_: &mut Workspace, _: &SubstituteLine, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.start_recording(cx);
             if matches!(vim.state().mode, Mode::VisualBlock | Mode::Visual) {
                 vim.switch_mode(Mode::VisualLine, false, cx)
@@ -28,7 +28,7 @@ pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>
     });
 }
 
-pub fn substitute(vim: &mut Vim, count: Option<usize>, line_mode: bool, cx: &mut WindowContext) {
+pub fn substitute(vim: &mut Helix, count: Option<usize>, line_mode: bool, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         editor.set_clip_at_line_ends(false, cx);
         editor.transact(cx, |editor, cx| {

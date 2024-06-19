@@ -3,24 +3,24 @@ use gpui::{actions, View};
 use ui::{ViewContext, WindowContext};
 use workspace::Workspace;
 
-use crate::{state::Mode, Vim};
+use crate::{state::Mode, Helix};
 
 actions!(vim, [ChangeListOlder, ChangeListNewer]);
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_, _: &ChangeListOlder, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             move_to_change(vim, Direction::Prev, cx);
         })
     });
     workspace.register_action(|_, _: &ChangeListNewer, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             move_to_change(vim, Direction::Next, cx);
         })
     });
 }
 
-fn move_to_change(vim: &mut Vim, direction: Direction, cx: &mut WindowContext) {
+fn move_to_change(vim: &mut Helix, direction: Direction, cx: &mut WindowContext) {
     let count = vim.take_count(cx).unwrap_or(1);
     let selections = vim.update_state(|state| {
         if state.change_list.is_empty() {
@@ -53,7 +53,7 @@ fn move_to_change(vim: &mut Vim, direction: Direction, cx: &mut WindowContext) {
     });
 }
 
-pub(crate) fn push_to_change_list(vim: &mut Vim, editor: View<Editor>, cx: &mut WindowContext) {
+pub(crate) fn push_to_change_list(vim: &mut Helix, editor: View<Editor>, cx: &mut WindowContext) {
     let (map, selections) =
         editor.update(cx, |editor, cx| editor.selections.all_adjusted_display(cx));
 

@@ -11,7 +11,7 @@ use crate::{
     motion::{search_motion, Motion},
     normal::move_cursor,
     state::{Mode, SearchState},
-    Vim,
+    Helix,
 };
 
 #[derive(Clone, Deserialize, PartialEq)]
@@ -109,7 +109,7 @@ fn search(workspace: &mut Workspace, action: &Search, cx: &mut ViewContext<Works
     } else {
         Direction::Next
     };
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let count = vim.take_count(cx).unwrap_or(1);
         let prior_selections = vim.editor_selections(cx);
         pane.update(cx, |pane, cx| {
@@ -143,13 +143,13 @@ fn search(workspace: &mut Workspace, action: &Search, cx: &mut ViewContext<Works
 
 // hook into the existing to clear out any vim search state on cmd+f or edit -> find.
 fn search_deploy(_: &mut Workspace, _: &buffer_search::Deploy, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, _| vim.workspace_state.search = Default::default());
+    Helix::update(cx, |vim, _| vim.workspace_state.search = Default::default());
     cx.propagate();
 }
 
 fn search_submit(workspace: &mut Workspace, _: &SearchSubmit, cx: &mut ViewContext<Workspace>) {
     let mut motion = None;
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let pane = workspace.active_pane().clone();
         pane.update(cx, |pane, cx| {
             if let Some(search_bar) = pane.toolbar().read(cx).item_of_type::<BufferSearchBar>() {
@@ -213,7 +213,7 @@ pub fn move_to_match_internal(
     cx: &mut ViewContext<Workspace>,
 ) {
     let mut motion = None;
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let pane = workspace.active_pane().clone();
         let count = vim.take_count(cx).unwrap_or(1);
         let prior_selections = vim.editor_selections(cx);
@@ -246,7 +246,7 @@ pub fn move_to_internal(
     whole_word: bool,
     cx: &mut ViewContext<Workspace>,
 ) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let pane = workspace.active_pane().clone();
         let count = vim.take_count(cx).unwrap_or(1);
         let prior_selections = vim.editor_selections(cx);
@@ -278,7 +278,7 @@ pub fn move_to_internal(
                             search_bar.select_match(direction, count, cx);
 
                             let new_selections =
-                                Vim::update(cx, |vim, cx| vim.editor_selections(cx));
+                                Helix::update(cx, |vim, cx| vim.editor_selections(cx));
                             search_motion(
                                 Motion::ZedSearchResult {
                                     prior_selections,
@@ -345,7 +345,7 @@ fn replace_command(
 ) {
     let replacement = parse_replace_all(&action.query);
     let pane = workspace.active_pane().clone();
-    let mut editor = Vim::read(cx)
+    let mut editor = Helix::read(cx)
         .active_editor
         .as_ref()
         .and_then(|editor| editor.upgrade());
@@ -401,7 +401,7 @@ fn replace_command(
                         })
                         .detach();
                     }
-                    Vim::update(cx, |vim, cx| {
+                    Helix::update(cx, |vim, cx| {
                         move_cursor(
                             vim,
                             Motion::StartOfLine {

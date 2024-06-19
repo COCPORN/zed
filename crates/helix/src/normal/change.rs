@@ -3,7 +3,7 @@ use crate::{
     normal::yank::copy_selections_content,
     object::Object,
     state::Mode,
-    Vim,
+    Helix,
 };
 use editor::{
     display_map::{DisplaySnapshot, ToDisplayPoint},
@@ -14,7 +14,12 @@ use editor::{
 use gpui::WindowContext;
 use language::{char_kind, CharKind, Selection};
 
-pub fn change_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
+pub fn change_motion(
+    vim: &mut Helix,
+    motion: Motion,
+    times: Option<usize>,
+    cx: &mut WindowContext,
+) {
     // Some motions ignore failure when switching to normal mode
     let mut motion_succeeded = matches!(
         motion,
@@ -81,7 +86,7 @@ pub fn change_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &m
     }
 }
 
-pub fn change_object(vim: &mut Vim, object: Object, around: bool, cx: &mut WindowContext) {
+pub fn change_object(vim: &mut Helix, object: Object, around: bool, cx: &mut WindowContext) {
     let mut objects_found = false;
     vim.update_active_editor(cx, |vim, editor, cx| {
         // We are swapping to insert mode anyway. Just set the line end clipping behavior now

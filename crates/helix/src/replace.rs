@@ -1,7 +1,7 @@
 use crate::{
     motion::{self},
     state::Mode,
-    Vim,
+    Helix,
 };
 use editor::{display_map::ToDisplayPoint, Bias, ToPoint};
 use gpui::{actions, ViewContext, WindowContext};
@@ -14,14 +14,14 @@ actions!(vim, [ToggleReplace, UndoReplace]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_, _: &ToggleReplace, cx: &mut ViewContext<Workspace>| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.update_state(|state| state.replacements = vec![]);
             vim.switch_mode(Mode::Replace, false, cx);
         });
     });
 
     workspace.register_action(|_, _: &UndoReplace, cx: &mut ViewContext<Workspace>| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             if vim.state().mode != Mode::Replace {
                 return;
             }
@@ -32,7 +32,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
 }
 
 pub(crate) fn multi_replace(text: Arc<str>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.update_active_editor(cx, |vim, editor, cx| {
             editor.transact(cx, |editor, cx| {
                 editor.set_clip_at_line_ends(false, cx);
@@ -85,7 +85,7 @@ pub(crate) fn multi_replace(text: Arc<str>, cx: &mut WindowContext) {
     });
 }
 
-fn undo_replace(vim: &mut Vim, maybe_times: Option<usize>, cx: &mut WindowContext) {
+fn undo_replace(vim: &mut Helix, maybe_times: Option<usize>, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         editor.transact(cx, |editor, cx| {
             editor.set_clip_at_line_ends(false, cx);

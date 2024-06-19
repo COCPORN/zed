@@ -5,7 +5,7 @@ use crate::{
     normal::normal_object,
     state::Mode,
     visual::visual_object,
-    Vim,
+    Helix,
 };
 use editor::{
     display_map::{DisplaySnapshot, ToDisplayPoint},
@@ -102,7 +102,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
 }
 
 fn object(object: Object, cx: &mut WindowContext) {
-    match Vim::read(cx).state().mode {
+    match Helix::read(cx).state().mode {
         Mode::Normal => normal_object(object, cx),
         Mode::Visual | Mode::VisualLine | Mode::VisualBlock => visual_object(object, cx),
         Mode::Insert | Mode::Replace => {

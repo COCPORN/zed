@@ -1,4 +1,4 @@
-use crate::{motion::Motion, normal::yank::copy_selections_content, object::Object, Vim};
+use crate::{motion::Motion, normal::yank::copy_selections_content, object::Object, Helix};
 use collections::{HashMap, HashSet};
 use editor::{
     display_map::{DisplaySnapshot, ToDisplayPoint},
@@ -9,7 +9,12 @@ use gpui::WindowContext;
 use language::{Point, Selection};
 use multi_buffer::MultiBufferRow;
 
-pub fn delete_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
+pub fn delete_motion(
+    vim: &mut Helix,
+    motion: Motion,
+    times: Option<usize>,
+    cx: &mut WindowContext,
+) {
     vim.stop_recording();
     vim.update_active_editor(cx, |vim, editor, cx| {
         let text_layout_details = editor.text_layout_details(cx);
@@ -65,7 +70,7 @@ pub fn delete_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &m
     });
 }
 
-pub fn delete_object(vim: &mut Vim, object: Object, around: bool, cx: &mut WindowContext) {
+pub fn delete_object(vim: &mut Helix, object: Object, around: bool, cx: &mut WindowContext) {
     vim.stop_recording();
     vim.update_active_editor(cx, |vim, editor, cx| {
         editor.transact(cx, |editor, cx| {

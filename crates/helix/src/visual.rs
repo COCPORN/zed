@@ -20,7 +20,7 @@ use crate::{
     normal::{mark::create_visual_marks, substitute::substitute},
     object::Object,
     state::{Mode, Operator},
-    Vim,
+    Helix,
 };
 
 actions!(
@@ -55,19 +55,19 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     );
     workspace.register_action(other_end);
     workspace.register_action(|_, _: &VisualDelete, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             delete(vim, false, cx);
         });
     });
     workspace.register_action(|_, _: &VisualDeleteLine, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             delete(vim, true, cx);
         });
     });
     workspace.register_action(|_, _: &VisualYank, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             yank(vim, cx);
         });
     });
@@ -75,18 +75,18 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(select_next);
     workspace.register_action(select_previous);
     workspace.register_action(|workspace, _: &SelectNextMatch, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             select_match(workspace, vim, Direction::Next, cx);
         });
     });
     workspace.register_action(|workspace, _: &SelectPreviousMatch, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             select_match(workspace, vim, Direction::Prev, cx);
         });
     });
 
     workspace.register_action(|_, _: &RestoreVisualSelection, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             let Some((stored_mode, reversed)) =
                 vim.update_state(|state| state.stored_visual_mode.take())
             else {
@@ -133,7 +133,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
 }
 
 pub fn visual_motion(motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.update_active_editor(cx, |vim, editor, cx| {
             let text_layout_details = editor.text_layout_details(cx);
             if vim.state().mode == Mode::VisualBlock
@@ -317,7 +317,7 @@ pub fn visual_block_motion(
 }
 
 pub fn visual_object(object: Object, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         if let Some(Operator::Object { around }) = vim.active_operator() {
             vim.pop_operator(cx);
             let current_mode = vim.state().mode;
@@ -388,7 +388,7 @@ pub fn visual_object(object: Object, cx: &mut WindowContext) {
 }
 
 fn toggle_mode(mode: Mode, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         if vim.state().mode == mode {
             vim.switch_mode(Mode::Normal, false, cx);
         } else {
@@ -398,7 +398,7 @@ fn toggle_mode(mode: Mode, cx: &mut ViewContext<Workspace>) {
 }
 
 pub fn other_end(_: &mut Workspace, _: &OtherEnd, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.update_active_editor(cx, |_, editor, cx| {
             editor.change_selections(None, cx, |s| {
                 s.move_with(|_, selection| {
@@ -409,7 +409,7 @@ pub fn other_end(_: &mut Workspace, _: &OtherEnd, cx: &mut ViewContext<Workspace
     });
 }
 
-pub fn delete(vim: &mut Vim, line_mode: bool, cx: &mut WindowContext) {
+pub fn delete(vim: &mut Helix, line_mode: bool, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         let mut original_columns: HashMap<_, _> = Default::default();
         let line_mode = line_mode || editor.selections.line_mode;
@@ -462,7 +462,7 @@ pub fn delete(vim: &mut Vim, line_mode: bool, cx: &mut WindowContext) {
     vim.switch_mode(Mode::Normal, true, cx);
 }
 
-pub fn yank(vim: &mut Vim, cx: &mut WindowContext) {
+pub fn yank(vim: &mut Helix, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         let line_mode = editor.selections.line_mode;
         yank_selections_content(vim, editor, line_mode, cx);
@@ -482,7 +482,7 @@ pub fn yank(vim: &mut Vim, cx: &mut WindowContext) {
 }
 
 pub(crate) fn visual_replace(text: Arc<str>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.stop_recording();
         vim.update_active_editor(cx, |_, editor, cx| {
             editor.transact(cx, |editor, cx| {
@@ -525,7 +525,7 @@ pub(crate) fn visual_replace(text: Arc<str>, cx: &mut WindowContext) {
 }
 
 pub fn select_next(_: &mut Workspace, _: &SelectNext, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let count =
             vim.take_count(cx)
                 .unwrap_or_else(|| if vim.state().mode.is_visual() { 1 } else { 2 });
@@ -545,7 +545,7 @@ pub fn select_next(_: &mut Workspace, _: &SelectNext, cx: &mut ViewContext<Works
 }
 
 pub fn select_previous(_: &mut Workspace, _: &SelectPrevious, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let count =
             vim.take_count(cx)
                 .unwrap_or_else(|| if vim.state().mode.is_visual() { 1 } else { 2 });
@@ -565,7 +565,7 @@ pub fn select_previous(_: &mut Workspace, _: &SelectPrevious, cx: &mut ViewConte
 
 pub fn select_match(
     workspace: &mut Workspace,
-    vim: &mut Vim,
+    vim: &mut Helix,
     direction: Direction,
     cx: &mut WindowContext,
 ) {

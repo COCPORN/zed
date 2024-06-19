@@ -12,10 +12,10 @@ use language::SelectionGoal;
 use crate::{
     motion::{self, Motion},
     state::Mode,
-    Vim,
+    Helix,
 };
 
-pub fn create_mark(vim: &mut Vim, text: Arc<str>, tail: bool, cx: &mut WindowContext) {
+pub fn create_mark(vim: &mut Helix, text: Arc<str>, tail: bool, cx: &mut WindowContext) {
     let Some(anchors) = vim.update_active_editor(cx, |_, editor, _| {
         editor
             .selections
@@ -30,7 +30,7 @@ pub fn create_mark(vim: &mut Vim, text: Arc<str>, tail: bool, cx: &mut WindowCon
     vim.clear_operator(cx);
 }
 
-pub fn create_visual_marks(vim: &mut Vim, mode: Mode, cx: &mut WindowContext) {
+pub fn create_visual_marks(vim: &mut Helix, mode: Mode, cx: &mut WindowContext) {
     let mut starts = vec![];
     let mut ends = vec![];
     let mut reversed = vec![];
@@ -60,7 +60,7 @@ pub fn create_visual_marks(vim: &mut Vim, mode: Mode, cx: &mut WindowContext) {
 }
 
 pub fn jump(text: Arc<str>, line: bool, cx: &mut WindowContext) {
-    let anchors = Vim::update(cx, |vim, cx| {
+    let anchors = Helix::update(cx, |vim, cx| {
         vim.pop_operator(cx);
 
         match &*text {
@@ -86,7 +86,7 @@ pub fn jump(text: Arc<str>, line: bool, cx: &mut WindowContext) {
 
     let Some(anchors) = anchors else { return };
 
-    let is_active_operator = Vim::read(cx).state().active_operator().is_some();
+    let is_active_operator = Helix::read(cx).state().active_operator().is_some();
     if is_active_operator {
         if let Some(anchor) = anchors.last() {
             motion::motion(
@@ -99,7 +99,7 @@ pub fn jump(text: Arc<str>, line: bool, cx: &mut WindowContext) {
         }
         return;
     } else {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.update_active_editor(cx, |_, editor, cx| {
                 let map = editor.snapshot(cx);
                 let mut ranges: Vec<Range<Anchor>> = Vec::new();

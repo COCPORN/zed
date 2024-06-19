@@ -6,7 +6,7 @@ use language::{Bias, Point};
 use serde::Deserialize;
 use workspace::Workspace;
 
-use crate::{state::Mode, Vim};
+use crate::{state::Mode, Helix};
 
 #[derive(Clone, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -26,7 +26,7 @@ impl_actions!(vim, [Increment, Decrement]);
 
 pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, action: &Increment, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let count = vim.take_count(cx).unwrap_or(1);
             let step = if action.step { 1 } else { 0 };
@@ -34,7 +34,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
         })
     });
     workspace.register_action(|_: &mut Workspace, action: &Decrement, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let count = vim.take_count(cx).unwrap_or(1);
             let step = if action.step { -1 } else { 0 };
@@ -43,7 +43,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     });
 }
 
-fn increment(vim: &mut Vim, mut delta: i32, step: i32, cx: &mut WindowContext) {
+fn increment(vim: &mut Helix, mut delta: i32, step: i32, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         let mut edits = Vec::new();
         let mut new_anchors = Vec::new();

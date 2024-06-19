@@ -4,7 +4,7 @@ use crate::{
     motion::Motion,
     object::Object,
     state::{Mode, Register},
-    Vim,
+    Helix,
 };
 use collections::HashMap;
 use editor::{ClipboardSelection, Editor};
@@ -13,7 +13,7 @@ use language::Point;
 use multi_buffer::MultiBufferRow;
 use ui::ViewContext;
 
-pub fn yank_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
+pub fn yank_motion(vim: &mut Helix, motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         let text_layout_details = editor.text_layout_details(cx);
         editor.transact(cx, |editor, cx| {
@@ -37,7 +37,7 @@ pub fn yank_motion(vim: &mut Vim, motion: Motion, times: Option<usize>, cx: &mut
     });
 }
 
-pub fn yank_object(vim: &mut Vim, object: Object, around: bool, cx: &mut WindowContext) {
+pub fn yank_object(vim: &mut Helix, object: Object, around: bool, cx: &mut WindowContext) {
     vim.update_active_editor(cx, |vim, editor, cx| {
         editor.transact(cx, |editor, cx| {
             editor.set_clip_at_line_ends(false, cx);
@@ -61,7 +61,7 @@ pub fn yank_object(vim: &mut Vim, object: Object, around: bool, cx: &mut WindowC
 }
 
 pub fn yank_selections_content(
-    vim: &mut Vim,
+    vim: &mut Helix,
     editor: &mut Editor,
     linewise: bool,
     cx: &mut ViewContext<Editor>,
@@ -70,7 +70,7 @@ pub fn yank_selections_content(
 }
 
 pub fn copy_selections_content(
-    vim: &mut Vim,
+    vim: &mut Helix,
     editor: &mut Editor,
     linewise: bool,
     cx: &mut ViewContext<Editor>,
@@ -81,7 +81,7 @@ pub fn copy_selections_content(
 struct HighlightOnYank;
 
 fn copy_selections_content_internal(
-    vim: &mut Vim,
+    vim: &mut Helix,
     editor: &mut Editor,
     linewise: bool,
     is_yank: bool,

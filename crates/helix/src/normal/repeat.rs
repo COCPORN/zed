@@ -3,7 +3,7 @@ use crate::{
     motion::Motion,
     state::{Mode, RecordedSelection, ReplayableAction},
     visual::visual_motion,
-    Vim,
+    Helix,
 };
 use gpui::{actions, Action, ViewContext, WindowContext};
 use workspace::Workspace;
@@ -41,7 +41,7 @@ fn repeatable_insert(action: &ReplayableAction) -> Option<Box<dyn Action>> {
 
 pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, _: &EndRepeat, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.workspace_state.replaying = false;
             vim.switch_mode(Mode::Normal, false, cx)
         });
@@ -51,7 +51,7 @@ pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>
 }
 
 pub(crate) fn repeat(cx: &mut WindowContext, from_insert_mode: bool) {
-    let Some((mut actions, editor, selection)) = Vim::update(cx, |vim, cx| {
+    let Some((mut actions, editor, selection)) = Helix::update(cx, |vim, cx| {
         let actions = vim.workspace_state.recorded_actions.clone();
         if actions.is_empty() {
             return None;
@@ -150,7 +150,7 @@ pub(crate) fn repeat(cx: &mut WindowContext, from_insert_mode: bool) {
         let mut new_actions = actions.clone();
         actions[0] = ReplayableAction::Action(to_repeat.boxed_clone());
 
-        let mut count = Vim::read(cx).workspace_state.recorded_count.unwrap_or(1);
+        let mut count = Helix::read(cx).workspace_state.recorded_count.unwrap_or(1);
 
         // if we came from insert mode we're just doing repetitions 2 onwards.
         if from_insert_mode {
@@ -165,7 +165,7 @@ pub(crate) fn repeat(cx: &mut WindowContext, from_insert_mode: bool) {
         actions = new_actions;
     }
 
-    Vim::update(cx, |vim, _| vim.workspace_state.replaying = true);
+    Helix::update(cx, |vim, _| vim.workspace_state.replaying = true);
     let window = cx.window_handle();
     cx.spawn(move |mut cx| async move {
         editor.update(&mut cx, |editor, _| {
@@ -173,7 +173,7 @@ pub(crate) fn repeat(cx: &mut WindowContext, from_insert_mode: bool) {
         })?;
         for action in actions {
             if !matches!(
-                cx.update(|cx| Vim::read(cx).workspace_state.replaying),
+                cx.update(|cx| Helix::read(cx).workspace_state.replaying),
                 Ok(true)
             ) {
                 break;

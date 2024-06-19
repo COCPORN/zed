@@ -49,7 +49,7 @@ use crate::state::ReplayableAction;
 /// Whether or not to enable Vim mode (work in progress).
 ///
 /// Default: false
-pub struct VimModeSetting(pub bool);
+pub struct HelixModeSetting(pub bool);
 
 /// An Action to Switch between modes
 #[derive(Clone, Deserialize, PartialEq)]
@@ -89,8 +89,8 @@ impl_actions!(vim, [SwitchMode, PushOperator, Number, SelectRegister]);
 
 /// Initializes the `vim` crate.
 pub fn init(cx: &mut AppContext) {
-    cx.set_global(Vim::default());
-    VimModeSetting::register(cx);
+    cx.set_global(Helix::default());
+    HelixModeSetting::register(cx);
     VimSettings::register(cx);
 
     cx.observe_keystrokes(observe_keystrokes).detach();
@@ -103,14 +103,14 @@ pub fn init(cx: &mut AppContext) {
     // will be initialized as disabled by default, so we filter its commands
     // out when starting up.
     CommandPaletteFilter::update_global(cx, |filter, _| {
-        filter.hide_namespace(Vim::NAMESPACE);
+        filter.hide_namespace(Helix::NAMESPACE);
     });
-    Vim::update_global(cx, |vim, cx| {
-        vim.set_enabled(VimModeSetting::get_global(cx).0, cx)
+    Helix::update_global(cx, |vim, cx| {
+        vim.set_enabled(HelixModeSetting::get_global(cx).0, cx)
     });
     cx.observe_global::<SettingsStore>(|cx| {
-        Vim::update_global(cx, |vim, cx| {
-            vim.set_enabled(VimModeSetting::get_global(cx).0, cx)
+        Helix::update_global(cx, |vim, cx| {
+            vim.set_enabled(HelixModeSetting::get_global(cx).0, cx)
         });
     })
     .detach();
@@ -118,28 +118,28 @@ pub fn init(cx: &mut AppContext) {
 
 fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
     workspace.register_action(|_: &mut Workspace, &SwitchMode(mode): &SwitchMode, cx| {
-        Vim::update(cx, |vim, cx| vim.switch_mode(mode, false, cx))
+        Helix::update(cx, |vim, cx| vim.switch_mode(mode, false, cx))
     });
     workspace.register_action(
         |_: &mut Workspace, PushOperator(operator): &PushOperator, cx| {
-            Vim::update(cx, |vim, cx| vim.push_operator(operator.clone(), cx))
+            Helix::update(cx, |vim, cx| vim.push_operator(operator.clone(), cx))
         },
     );
     workspace.register_action(|_: &mut Workspace, n: &Number, cx: _| {
-        Vim::update(cx, |vim, cx| vim.push_count_digit(n.0, cx));
+        Helix::update(cx, |vim, cx| vim.push_count_digit(n.0, cx));
     });
     workspace.register_action(|_: &mut Workspace, _: &Tab, cx| {
-        Vim::active_editor_input_ignored(" ".into(), cx)
+        Helix::active_editor_input_ignored(" ".into(), cx)
     });
 
     workspace.register_action(|_: &mut Workspace, _: &Enter, cx| {
-        Vim::active_editor_input_ignored("\n".into(), cx)
+        Helix::active_editor_input_ignored("\n".into(), cx)
     });
 
     workspace.register_action(|workspace: &mut Workspace, _: &ToggleVimMode, cx| {
         let fs = workspace.app_state().fs.clone();
-        let currently_enabled = VimModeSetting::get_global(cx).0;
-        update_settings_file::<VimModeSetting>(fs, cx, move |setting| {
+        let currently_enabled = HelixModeSetting::get_global(cx).0;
+        update_settings_file::<HelixModeSetting>(fs, cx, move |setting| {
             *setting = Some(!currently_enabled)
         })
     });
@@ -170,7 +170,7 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
         .as_ref()
         .map(|action| action.boxed_clone())
     {
-        Vim::update(cx, |vim, _| {
+        Helix::update(cx, |vim, _| {
             if vim.workspace_state.recording {
                 vim.workspace_state
                     .recorded_actions
@@ -191,7 +191,7 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
         return;
     }
 
-    Vim::update(cx, |vim, cx| match vim.active_operator() {
+    Helix::update(cx, |vim, cx| match vim.active_operator() {
         Some(
             Operator::FindForward { .. }
             | Operator::FindBackward { .. }
@@ -210,9 +210,9 @@ fn observe_keystrokes(keystroke_event: &KeystrokeEvent, cx: &mut WindowContext) 
     });
 }
 
-/// The state pertaining to Vim mode.
+/// The state pertaining to Helix mode.
 #[derive(Default)]
-struct Vim {
+struct Helix {
     active_editor: Option<WeakView<Editor>>,
     editor_subscription: Option<Subscription>,
     enabled: bool,
@@ -221,9 +221,9 @@ struct Vim {
     default_state: EditorState,
 }
 
-impl Global for Vim {}
+impl Global for Helix {}
 
-impl Vim {
+impl Helix {
     /// The namespace for Vim actions.
     const NAMESPACE: &'static str = "vim";
 
@@ -247,27 +247,27 @@ impl Vim {
         self.editor_subscription = Some(cx.subscribe(&editor, |editor, event, cx| match event {
             EditorEvent::SelectionsChanged { local: true } => {
                 if editor.read(cx).leader_peer_id().is_none() {
-                    Vim::update(cx, |vim, cx| {
+                    Helix::update(cx, |vim, cx| {
                         vim.local_selections_changed(editor, cx);
                     })
                 }
             }
             EditorEvent::InputIgnored { text } => {
-                Vim::active_editor_input_ignored(text.clone(), cx);
-                Vim::record_insertion(text, None, cx)
+                Helix::active_editor_input_ignored(text.clone(), cx);
+                Helix::record_insertion(text, None, cx)
             }
             EditorEvent::InputHandled {
                 text,
                 utf16_range_to_replace: range_to_replace,
-            } => Vim::record_insertion(text, range_to_replace.clone(), cx),
-            EditorEvent::TransactionBegun { transaction_id } => Vim::update(cx, |vim, cx| {
+            } => Helix::record_insertion(text, range_to_replace.clone(), cx),
+            EditorEvent::TransactionBegun { transaction_id } => Helix::update(cx, |vim, cx| {
                 vim.transaction_begun(*transaction_id, cx);
             }),
-            EditorEvent::TransactionUndone { transaction_id } => Vim::update(cx, |vim, cx| {
+            EditorEvent::TransactionUndone { transaction_id } => Helix::update(cx, |vim, cx| {
                 vim.transaction_undone(transaction_id, cx);
             }),
             EditorEvent::Edited { .. } => {
-                Vim::update(cx, |vim, cx| vim.transaction_ended(editor, cx))
+                Helix::update(cx, |vim, cx| vim.transaction_ended(editor, cx))
             }
             _ => {}
         }));
@@ -293,7 +293,7 @@ impl Vim {
         range_to_replace: Option<Range<isize>>,
         cx: &mut WindowContext,
     ) {
-        Vim::update(cx, |vim, _| {
+        Helix::update(cx, |vim, _| {
             if vim.workspace_state.recording {
                 vim.workspace_state
                     .recorded_actions
@@ -312,7 +312,7 @@ impl Vim {
     fn update_active_editor<S>(
         &mut self,
         cx: &mut WindowContext,
-        update: impl FnOnce(&mut Vim, &mut Editor, &mut ViewContext<Editor>) -> S,
+        update: impl FnOnce(&mut Helix, &mut Editor, &mut ViewContext<Editor>) -> S,
     ) -> Option<S> {
         let editor = self.active_editor.clone()?.upgrade()?;
         Some(editor.update(cx, |editor, cx| update(self, editor, cx)))
@@ -816,7 +816,7 @@ impl Vim {
             return;
         }
 
-        match Vim::read(cx).active_operator() {
+        match Helix::read(cx).active_operator() {
             Some(Operator::FindForward { before }) => {
                 let find = Motion::FindForward {
                     before,
@@ -828,7 +828,7 @@ impl Vim {
                     },
                     smartcase: VimSettings::get_global(cx).use_smartcase_find,
                 };
-                Vim::update(cx, |vim, _| {
+                Helix::update(cx, |vim, _| {
                     vim.workspace_state.last_find = Some(find.clone())
                 });
                 motion::motion(find, cx)
@@ -844,45 +844,45 @@ impl Vim {
                     },
                     smartcase: VimSettings::get_global(cx).use_smartcase_find,
                 };
-                Vim::update(cx, |vim, _| {
+                Helix::update(cx, |vim, _| {
                     vim.workspace_state.last_find = Some(find.clone())
                 });
                 motion::motion(find, cx)
             }
-            Some(Operator::Replace) => match Vim::read(cx).state().mode {
+            Some(Operator::Replace) => match Helix::read(cx).state().mode {
                 Mode::Normal => normal_replace(text, cx),
                 Mode::Visual | Mode::VisualLine | Mode::VisualBlock => visual_replace(text, cx),
-                _ => Vim::update(cx, |vim, cx| vim.clear_operator(cx)),
+                _ => Helix::update(cx, |vim, cx| vim.clear_operator(cx)),
             },
-            Some(Operator::AddSurrounds { target }) => match Vim::read(cx).state().mode {
+            Some(Operator::AddSurrounds { target }) => match Helix::read(cx).state().mode {
                 Mode::Normal => {
                     if let Some(target) = target {
                         add_surrounds(text, target, cx);
-                        Vim::update(cx, |vim, cx| vim.clear_operator(cx));
+                        Helix::update(cx, |vim, cx| vim.clear_operator(cx));
                     }
                 }
-                _ => Vim::update(cx, |vim, cx| vim.clear_operator(cx)),
+                _ => Helix::update(cx, |vim, cx| vim.clear_operator(cx)),
             },
-            Some(Operator::ChangeSurrounds { target }) => match Vim::read(cx).state().mode {
+            Some(Operator::ChangeSurrounds { target }) => match Helix::read(cx).state().mode {
                 Mode::Normal => {
                     if let Some(target) = target {
                         change_surrounds(text, target, cx);
-                        Vim::update(cx, |vim, cx| vim.clear_operator(cx));
+                        Helix::update(cx, |vim, cx| vim.clear_operator(cx));
                     }
                 }
-                _ => Vim::update(cx, |vim, cx| vim.clear_operator(cx)),
+                _ => Helix::update(cx, |vim, cx| vim.clear_operator(cx)),
             },
-            Some(Operator::DeleteSurrounds) => match Vim::read(cx).state().mode {
+            Some(Operator::DeleteSurrounds) => match Helix::read(cx).state().mode {
                 Mode::Normal => {
                     delete_surrounds(text, cx);
-                    Vim::update(cx, |vim, cx| vim.clear_operator(cx));
+                    Helix::update(cx, |vim, cx| vim.clear_operator(cx));
                 }
-                _ => Vim::update(cx, |vim, cx| vim.clear_operator(cx)),
+                _ => Helix::update(cx, |vim, cx| vim.clear_operator(cx)),
             },
-            Some(Operator::Mark) => Vim::update(cx, |vim, cx| {
+            Some(Operator::Mark) => Helix::update(cx, |vim, cx| {
                 normal::mark::create_mark(vim, text, false, cx)
             }),
-            Some(Operator::Register) => Vim::update(cx, |vim, cx| match vim.state().mode {
+            Some(Operator::Register) => Helix::update(cx, |vim, cx| match vim.state().mode {
                 Mode::Insert => {
                     vim.update_active_editor(cx, |vim, editor, cx| {
                         if let Some(register) =
@@ -903,7 +903,7 @@ impl Vim {
                 }
             }),
             Some(Operator::Jump { line }) => normal::mark::jump(text, line, cx),
-            _ => match Vim::read(cx).state().mode {
+            _ => match Helix::read(cx).state().mode {
                 Mode::Replace => multi_replace(text, cx),
                 _ => {}
             },
@@ -1003,7 +1003,7 @@ impl Vim {
     }
 }
 
-impl Settings for VimModeSetting {
+impl Settings for HelixModeSetting {
     const KEY: Option<&'static str> = Some("helix_mode");
 
     type FileContent = Option<bool>;

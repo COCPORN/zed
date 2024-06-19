@@ -9,7 +9,7 @@ use workspace::Workspace;
 use crate::{
     normal::yank::copy_selections_content,
     state::{Mode, Register},
-    Vim,
+    Helix,
 };
 
 #[derive(Clone, Deserialize, PartialEq)]
@@ -28,7 +28,7 @@ pub(crate) fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>
 }
 
 fn paste(_: &mut Workspace, action: &Paste, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.record_current_action(cx);
         let count = vim.take_count(cx).unwrap_or(1);
         vim.update_active_editor(cx, |vim, editor, cx| {

@@ -1,4 +1,4 @@
-use crate::Vim;
+use crate::Helix;
 use editor::{
     display_map::{DisplayRow, ToDisplayPoint},
     scroll::ScrollAmount,
@@ -52,7 +52,7 @@ fn scroll(
     move_cursor: bool,
     by: fn(c: Option<f32>) -> ScrollAmount,
 ) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let amount = by(vim.take_count(cx).map(|c| c as f32));
         vim.update_active_editor(cx, |_, editor, cx| {
             scroll_editor(editor, move_cursor, &amount, cx)

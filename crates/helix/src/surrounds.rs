@@ -2,7 +2,7 @@ use crate::{
     motion::{self, Motion},
     object::Object,
     state::Mode,
-    Vim,
+    Helix,
 };
 use editor::{movement, scroll::Autoscroll, Bias};
 use gpui::WindowContext;
@@ -26,7 +26,7 @@ impl<'de> Deserialize<'de> for SurroundsType {
 }
 
 pub fn add_surrounds(text: Arc<str>, target: SurroundsType, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.stop_recording();
         let count = vim.take_count(cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -119,7 +119,7 @@ pub fn add_surrounds(text: Arc<str>, target: SurroundsType, cx: &mut WindowConte
 }
 
 pub fn delete_surrounds(text: Arc<str>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.stop_recording();
 
         // only legitimate surrounds can be removed
@@ -215,7 +215,7 @@ pub fn delete_surrounds(text: Arc<str>, cx: &mut WindowContext) {
 
 pub fn change_surrounds(text: Arc<str>, target: Object, cx: &mut WindowContext) {
     if let Some(will_replace_pair) = object_to_bracket_pair(target) {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.stop_recording();
             vim.update_active_editor(cx, |_, editor, cx| {
                 editor.transact(cx, |editor, cx| {
@@ -329,7 +329,7 @@ pub fn change_surrounds(text: Arc<str>, target: Object, cx: &mut WindowContext) 
 /// If a valid pair of brackets is found, the method returns `true` and the cursor is automatically moved to the start of the bracket pair.
 /// If no valid pair of brackets is found for any cursor, the method returns `false`.
 pub fn check_and_move_to_valid_bracket_pair(
-    vim: &mut Vim,
+    vim: &mut Helix,
     object: Object,
     cx: &mut WindowContext,
 ) -> bool {

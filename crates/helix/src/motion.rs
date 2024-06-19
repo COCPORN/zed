@@ -18,7 +18,7 @@ use crate::{
     state::{Mode, Operator},
     surrounds::SurroundsType,
     visual::visual_motion,
-    Vim,
+    Helix,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -363,7 +363,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
         .register_action(|_: &mut Workspace, &GoToColumn, cx: _| motion(Motion::GoToColumn, cx));
 
     workspace.register_action(|_: &mut Workspace, _: &RepeatFind, cx: _| {
-        if let Some(last_find) = Vim::read(cx)
+        if let Some(last_find) = Helix::read(cx)
             .workspace_state
             .last_find
             .clone()
@@ -374,7 +374,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     });
 
     workspace.register_action(|_: &mut Workspace, _: &RepeatFindReversed, cx: _| {
-        if let Some(last_find) = Vim::read(cx)
+        if let Some(last_find) = Helix::read(cx)
             .workspace_state
             .last_find
             .clone()
@@ -397,10 +397,10 @@ pub(crate) fn search_motion(m: Motion, cx: &mut WindowContext) {
         prior_selections, ..
     } = &m
     {
-        match Vim::read(cx).state().mode {
+        match Helix::read(cx).state().mode {
             Mode::Visual | Mode::VisualLine | Mode::VisualBlock => {
                 if !prior_selections.is_empty() {
-                    Vim::update(cx, |vim, cx| {
+                    Helix::update(cx, |vim, cx| {
                         vim.update_active_editor(cx, |_, editor, cx| {
                             editor.change_selections(Some(Autoscroll::fit()), cx, |s| {
                                 s.select_ranges(prior_selections.iter().cloned())
@@ -410,7 +410,7 @@ pub(crate) fn search_motion(m: Motion, cx: &mut WindowContext) {
                 }
             }
             Mode::Normal | Mode::Replace | Mode::Insert => {
-                if Vim::read(cx).active_operator().is_none() {
+                if Helix::read(cx).active_operator().is_none() {
                     return;
                 }
             }
@@ -422,15 +422,15 @@ pub(crate) fn search_motion(m: Motion, cx: &mut WindowContext) {
 
 pub(crate) fn motion(motion: Motion, cx: &mut WindowContext) {
     if let Some(Operator::FindForward { .. }) | Some(Operator::FindBackward { .. }) =
-        Vim::read(cx).active_operator()
+        Helix::read(cx).active_operator()
     {
-        Vim::update(cx, |vim, cx| vim.pop_operator(cx));
+        Helix::update(cx, |vim, cx| vim.pop_operator(cx));
     }
 
-    let count = Vim::update(cx, |vim, cx| vim.take_count(cx));
-    let active_operator = Vim::read(cx).active_operator();
+    let count = Helix::update(cx, |vim, cx| vim.take_count(cx));
+    let active_operator = Helix::read(cx).active_operator();
     let mut waiting_operator: Option<Operator> = None;
-    match Vim::read(cx).state().mode {
+    match Helix::read(cx).state().mode {
         Mode::Normal | Mode::Replace => {
             if active_operator == Some(Operator::AddSurrounds { target: None }) {
                 waiting_operator = Some(Operator::AddSurrounds {
@@ -447,7 +447,7 @@ pub(crate) fn motion(motion: Motion, cx: &mut WindowContext) {
             // Shouldn't execute a motion in insert mode. Ignoring
         }
     }
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.clear_operator(cx);
         if let Some(operator) = waiting_operator {
             vim.push_operator(operator, cx);

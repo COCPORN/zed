@@ -1,4 +1,4 @@
-use crate::{insert::NormalBefore, Vim, VimModeSetting};
+use crate::{insert::NormalBefore, Helix, HelixModeSetting};
 use editor::{Editor, EditorEvent};
 use gpui::{Action, AppContext, Entity, EntityId, UpdateGlobal, View, ViewContext, WindowContext};
 use settings::{Settings, SettingsStore};
@@ -13,12 +13,12 @@ pub fn init(cx: &mut AppContext) {
         })
         .detach();
 
-        let mut enabled = VimModeSetting::get_global(cx).0;
+        let mut enabled = HelixModeSetting::get_global(cx).0;
         cx.observe_global::<SettingsStore>(move |editor, cx| {
-            if VimModeSetting::get_global(cx).0 != enabled {
-                enabled = VimModeSetting::get_global(cx).0;
+            if HelixModeSetting::get_global(cx).0 != enabled {
+                enabled = HelixModeSetting::get_global(cx).0;
                 if !enabled {
-                    Vim::unhook_vim_settings(editor, cx);
+                    Helix::unhook_vim_settings(editor, cx);
                 }
             }
         })
@@ -30,7 +30,7 @@ pub fn init(cx: &mut AppContext) {
     .detach();
 }
 fn focused(editor: View<Editor>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         if !vim.enabled {
             return;
         }
@@ -39,7 +39,7 @@ fn focused(editor: View<Editor>, cx: &mut WindowContext) {
 }
 
 fn blurred(editor: View<Editor>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         if !vim.enabled {
             return;
         }
@@ -61,7 +61,7 @@ fn blurred(editor: View<Editor>, cx: &mut WindowContext) {
 }
 
 fn released(entity_id: EntityId, cx: &mut AppContext) {
-    Vim::update_global(cx, |vim, _cx| {
+    Helix::update_global(cx, |vim, _cx| {
         if vim
             .active_editor
             .as_ref()
@@ -76,7 +76,7 @@ fn released(entity_id: EntityId, cx: &mut AppContext) {
 
 #[cfg(test)]
 mod test {
-    use crate::{test::VimTestContext, Vim};
+    use crate::{test::VimTestContext, Helix};
     use editor::Editor;
     use gpui::{Context, Entity, VisualTestContext};
     use language::Buffer;
@@ -100,7 +100,7 @@ mod test {
         cx.run_until_parked();
 
         cx.update(|cx| {
-            let vim = Vim::read(cx);
+            let vim = Helix::read(cx);
             assert_eq!(
                 vim.active_editor.as_ref().unwrap().entity_id(),
                 editor2.entity_id(),
@@ -132,7 +132,7 @@ mod test {
 
         cx1.update(|cx| {
             assert_eq!(
-                Vim::read(cx).active_editor.as_ref().unwrap().entity_id(),
+                Helix::read(cx).active_editor.as_ref().unwrap().entity_id(),
                 editor2.entity_id(),
             )
         });
@@ -144,7 +144,7 @@ mod test {
 
         cx.update(|cx| {
             assert_eq!(
-                Vim::read(cx).active_editor.as_ref().unwrap().entity_id(),
+                Helix::read(cx).active_editor.as_ref().unwrap().entity_id(),
                 editor1.entity_id(),
             )
         });

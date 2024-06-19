@@ -11,7 +11,7 @@ use crate::{
     normal::{ChangeCase, ConvertToLowerCase, ConvertToUpperCase},
     object::Object,
     state::Mode,
-    Vim,
+    Helix,
 };
 
 pub enum CaseTarget {
@@ -21,7 +21,7 @@ pub enum CaseTarget {
 }
 
 pub fn change_case_motion(
-    vim: &mut Vim,
+    vim: &mut Helix,
     motion: Motion,
     times: Option<usize>,
     mode: CaseTarget,
@@ -57,7 +57,7 @@ pub fn change_case_motion(
 }
 
 pub fn change_case_object(
-    vim: &mut Vim,
+    vim: &mut Helix,
     object: Object,
     around: bool,
     mode: CaseTarget,
@@ -123,7 +123,7 @@ fn manipulate_text<F>(cx: &mut ViewContext<Workspace>, transform: F)
 where
     F: Fn(char) -> Vec<char> + Copy,
 {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.record_current_action(cx);
         let count = vim.take_count(cx).unwrap_or(1) as u32;
         vim.update_active_editor(cx, |vim, editor, cx| {

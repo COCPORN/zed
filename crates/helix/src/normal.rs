@@ -19,7 +19,7 @@ use crate::{
     object::Object,
     state::{Mode, Operator},
     surrounds::{check_and_move_to_valid_bracket_pair, SurroundsType},
-    Vim,
+    Helix,
 };
 use case::{change_case_motion, change_case_object, CaseTarget};
 use collections::BTreeSet;
@@ -81,21 +81,21 @@ pub(crate) fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace
     workspace.register_action(yank_line);
 
     workspace.register_action(|_: &mut Workspace, _: &DeleteLeft, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let times = vim.take_count(cx);
             delete_motion(vim, Motion::Left, times, cx);
         })
     });
     workspace.register_action(|_: &mut Workspace, _: &DeleteRight, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let times = vim.take_count(cx);
             delete_motion(vim, Motion::Right, times, cx);
         })
     });
     workspace.register_action(|_: &mut Workspace, _: &ChangeToEndOfLine, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.start_recording(cx);
             let times = vim.take_count(cx);
             change_motion(
@@ -109,7 +109,7 @@ pub(crate) fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace
         })
     });
     workspace.register_action(|_: &mut Workspace, _: &DeleteToEndOfLine, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let times = vim.take_count(cx);
             delete_motion(
@@ -123,7 +123,7 @@ pub(crate) fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace
         })
     });
     workspace.register_action(|_: &mut Workspace, _: &JoinLines, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             let mut times = vim.take_count(cx).unwrap_or(1);
             if vim.state().mode.is_visual() {
@@ -147,7 +147,7 @@ pub(crate) fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace
     });
 
     workspace.register_action(|_: &mut Workspace, _: &Indent, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             vim.update_active_editor(cx, |_, editor, cx| {
                 editor.transact(cx, |editor, cx| {
@@ -163,7 +163,7 @@ pub(crate) fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace
     });
 
     workspace.register_action(|_: &mut Workspace, _: &Outdent, cx| {
-        Vim::update(cx, |vim, cx| {
+        Helix::update(cx, |vim, cx| {
             vim.record_current_action(cx);
             vim.update_active_editor(cx, |_, editor, cx| {
                 editor.transact(cx, |editor, cx| {
@@ -192,7 +192,7 @@ pub fn normal_motion(
     times: Option<usize>,
     cx: &mut WindowContext,
 ) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         match operator {
             None => move_cursor(vim, motion, times, cx),
             Some(Operator::Change) => change_motion(vim, motion, times, cx),
@@ -219,7 +219,7 @@ pub fn normal_motion(
 }
 
 pub fn normal_object(object: Object, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let mut waiting_operator: Option<Operator> = None;
         match vim.maybe_pop_operator() {
             Some(Operator::Object { around }) => match vim.maybe_pop_operator() {
@@ -272,7 +272,7 @@ pub fn normal_object(object: Object, cx: &mut WindowContext) {
 }
 
 pub(crate) fn move_cursor(
-    vim: &mut Vim,
+    vim: &mut Helix,
     motion: Motion,
     times: Option<usize>,
     cx: &mut WindowContext,
@@ -290,7 +290,7 @@ pub(crate) fn move_cursor(
 }
 
 fn insert_after(_: &mut Workspace, _: &InsertAfter, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -302,7 +302,7 @@ fn insert_after(_: &mut Workspace, _: &InsertAfter, cx: &mut ViewContext<Workspa
 }
 
 fn insert_before(_: &mut Workspace, _: &InsertBefore, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
     });
@@ -313,7 +313,7 @@ fn insert_first_non_whitespace(
     _: &InsertFirstNonWhitespace,
     cx: &mut ViewContext<Workspace>,
 ) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -330,7 +330,7 @@ fn insert_first_non_whitespace(
 }
 
 fn insert_end_of_line(_: &mut Workspace, _: &InsertEndOfLine, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -344,7 +344,7 @@ fn insert_end_of_line(_: &mut Workspace, _: &InsertEndOfLine, cx: &mut ViewConte
 }
 
 fn insert_at_previous(_: &mut Workspace, _: &InsertAtPrevious, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |vim, editor, cx| {
@@ -358,7 +358,7 @@ fn insert_at_previous(_: &mut Workspace, _: &InsertAtPrevious, cx: &mut ViewCont
 }
 
 fn insert_line_above(_: &mut Workspace, _: &InsertLineAbove, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -392,7 +392,7 @@ fn insert_line_above(_: &mut Workspace, _: &InsertLineAbove, cx: &mut ViewContex
 }
 
 fn insert_line_below(_: &mut Workspace, _: &InsertLineBelow, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.start_recording(cx);
         vim.switch_mode(Mode::Insert, false, cx);
         vim.update_active_editor(cx, |_, editor, cx| {
@@ -431,7 +431,7 @@ fn insert_line_below(_: &mut Workspace, _: &InsertLineBelow, cx: &mut ViewContex
 }
 
 fn yank_line(_: &mut Workspace, _: &YankLine, cx: &mut ViewContext<Workspace>) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         let count = vim.take_count(cx);
         yank_motion(vim, motion::Motion::CurrentLine, count, cx)
     })
@@ -465,7 +465,7 @@ fn restore_selection_cursors(
 }
 
 pub(crate) fn normal_replace(text: Arc<str>, cx: &mut WindowContext) {
-    Vim::update(cx, |vim, cx| {
+    Helix::update(cx, |vim, cx| {
         vim.stop_recording();
         vim.update_active_editor(cx, |_, editor, cx| {
             editor.transact(cx, |editor, cx| {
