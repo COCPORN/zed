@@ -18,7 +18,7 @@ pub fn init(cx: &mut AppContext) {
             if HelixModeSetting::get_global(cx).0 != enabled {
                 enabled = HelixModeSetting::get_global(cx).0;
                 if !enabled {
-                    Helix::unhook_vim_settings(editor, cx);
+                    Helix::unhook_helix_settings(editor, cx);
                 }
             }
         })

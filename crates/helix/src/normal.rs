@@ -1351,28 +1351,28 @@ mod test {
                     motion::NextSubwordStart {
                         ignore_punctuation: false,
                     },
-                    Some("Editor && VimControl && !VimWaiting && !menu"),
+                    Some("Editor && HelixControl && !HelixWaiting && !menu"),
                 ),
                 KeyBinding::new(
                     "b",
                     motion::PreviousSubwordStart {
                         ignore_punctuation: false,
                     },
-                    Some("Editor && VimControl && !VimWaiting && !menu"),
+                    Some("Editor && HelixControl && !HelixWaiting && !menu"),
                 ),
                 KeyBinding::new(
                     "e",
                     motion::NextSubwordEnd {
                         ignore_punctuation: false,
                     },
-                    Some("Editor && VimControl && !VimWaiting && !menu"),
+                    Some("Editor && HelixControl && !HelixWaiting && !menu"),
                 ),
                 KeyBinding::new(
                     "g e",
                     motion::PreviousSubwordEnd {
                         ignore_punctuation: false,
                     },
-                    Some("Editor && VimControl && !VimWaiting && !menu"),
+                    Some("Editor && HelixControl && !HelixWaiting && !menu"),
                 ),
             ]);
         });

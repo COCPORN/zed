@@ -990,7 +990,7 @@ impl Helix {
         });
     }
 
-    fn unhook_vim_settings(editor: &mut Editor, cx: &mut ViewContext<Editor>) {
+    fn unhook_helix_settings(editor: &mut Editor, cx: &mut ViewContext<Editor>) {
         if editor.mode() == EditorMode::Full {
             editor.set_cursor_shape(CursorShape::Bar, cx);
             editor.set_clip_at_line_ends(false, cx);
