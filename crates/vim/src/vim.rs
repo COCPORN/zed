@@ -1055,7 +1055,7 @@ pub enum Dialect {
 }
 
 #[derive(Deserialize)]
-struct VimSettings {
+pub struct VimSettings {
     // all vim uses vim clipboard
     // vim always uses system cliupbaord
     // some magic where yy is system and dd is not.
@@ -1066,7 +1066,7 @@ struct VimSettings {
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, JsonSchema)]
-struct VimSettingsContent {
+pub struct VimSettingsContent {
     pub use_system_clipboard: Option<UseSystemClipboard>,
     pub use_multiline_find: Option<bool>,
     pub use_smartcase_find: Option<bool>,

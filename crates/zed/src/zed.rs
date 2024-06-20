@@ -40,7 +40,7 @@ use paths::{local_settings_file_relative_path, local_tasks_file_relative_path};
 use terminal_view::terminal_panel::{self, TerminalPanel};
 use util::{asset_str, ResultExt};
 use uuid::Uuid;
-use vim::VimModeSetting;
+use vim::{Dialect, VimModeSetting, VimSettings};
 use welcome::BaseKeymap;
 use workspace::{
     create_and_open_local_file, notifications::simple_message_notification::MessageNotification,
@@ -722,7 +722,10 @@ pub fn load_default_keymap(cx: &mut AppContext) {
 
     KeymapFile::load_asset(DEFAULT_KEYMAP_PATH, cx).unwrap();
     if VimModeSetting::get_global(cx).0 {
-        KeymapFile::load_asset("keymaps/vim.json", cx).unwrap();
+        match VimSettings::get_global(cx).dialect {
+            Dialect::Default => KeymapFile::load_asset("keymaps/vim.json", cx).unwrap(),
+            Dialect::Helix => KeymapFile::load_asset("keymaps/helix.json", cx).unwrap(),
+        }
     }
 
     if let Some(asset_path) = base_keymap.asset_path() {
