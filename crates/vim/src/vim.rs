@@ -117,6 +117,11 @@ pub fn init(cx: &mut AppContext) {
 }
 
 fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
+    log::error!(
+        "Registering Vim-mode for workspace with {:?}",
+        VimSettings::get_global(cx).dialect
+    );
+
     workspace.register_action(|_: &mut Workspace, &SwitchMode(mode): &SwitchMode, cx| {
         Vim::update(cx, |vim, cx| vim.switch_mode(mode, false, cx))
     });
@@ -144,13 +149,28 @@ fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
         })
     });
 
-    workspace.register_action(|_: &mut Workspace, _: &OpenDefaultKeymap, cx| {
-        cx.emit(workspace::Event::OpenBundledFile {
-            text: settings::vim_keymap(),
-            title: "Default Vim Bindings",
-            language: "JSON",
-        });
-    });
+    match VimSettings::get_global(cx).dialect {
+        Dialect::Default => {
+            log::error!("Setting up Vim keymap");
+            workspace.register_action(|_: &mut Workspace, _: &OpenDefaultKeymap, cx| {
+                cx.emit(workspace::Event::OpenBundledFile {
+                    text: settings::vim_keymap(),
+                    title: "Default Vim Bindings",
+                    language: "JSON",
+                });
+            });
+        }
+        Dialect::Helix => {
+            log::error!("Setting up Helix keymap");
+            workspace.register_action(|_: &mut Workspace, _: &OpenDefaultKeymap, cx| {
+                cx.emit(workspace::Event::OpenBundledFile {
+                    text: settings::helix_keymap(),
+                    title: "Default Helix Bindings",
+                    language: "JSON",
+                });
+            });
+        }
+    };
 
     normal::register(workspace, cx);
     insert::register(workspace, cx);
@@ -1027,6 +1047,13 @@ pub enum UseSystemClipboard {
     OnYank,
 }
 
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum Dialect {
+    Default,
+    Helix,
+}
+
 #[derive(Deserialize)]
 struct VimSettings {
     // all vim uses vim clipboard
@@ -1035,6 +1062,7 @@ struct VimSettings {
     pub use_system_clipboard: UseSystemClipboard,
     pub use_multiline_find: bool,
     pub use_smartcase_find: bool,
+    pub dialect: Dialect,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, JsonSchema)]
@@ -1042,6 +1070,7 @@ struct VimSettingsContent {
     pub use_system_clipboard: Option<UseSystemClipboard>,
     pub use_multiline_find: Option<bool>,
     pub use_smartcase_find: Option<bool>,
+    pub dialect: Option<Dialect>,
 }
 
 impl Settings for VimSettings {
