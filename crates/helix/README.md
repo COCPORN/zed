@@ -1,6 +1,8 @@
 This contains the code for Zed's Helix emulation mode.
 
-This is just a repurposing of the code in the `vim`-directory to see if it is sensible to do.
+This is just a repurposing of the code in the `vim`-directory to see if it is sensible to do. There are going to be a bunch of vim-references here, possibly forever.
+
+I am making a reference to the vim workspace so that commands that are sensible to reuse can be removed from the helix crate if they are just pure duplicates.
 
 === TEXT BELOW LINE IS FROM THE VIM-DIRECTORY ===
 
