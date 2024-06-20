@@ -50,24 +50,18 @@ fn select_to_next_word_start(map: &DisplaySnapshot, point: DisplayPoint) -> Disp
     let raw_point = point.to_point(map);
     let scope = map.buffer_snapshot.language_scope_at(raw_point);
 
-    // let non_whitespace_point = find_boundary_point(
-    //     map,
-    //     point,
-    //     FindRange::MultiLine,
-    //     |left, right| !left.is_whitespace() || right.is_whitespace(),
-    //     true,
-    // );
-
+    // Use this to see if the character kind has changed, but keep
+    // grabbing whitespace
     let mut flipped = false;
     find_boundary(map, point, FindRange::MultiLine, |left, right| {
-        flipped = char_kind(&scope, left) != char_kind(&scope, right);
+        flipped = char_kind(&scope, left) != char_kind(&scope, right) && !right.is_whitespace();
         if right.is_whitespace() && right != '\n' {
             false
+        } else if left == '\n' {
+            true
         } else {
             flipped
         }
-        // (char_kind(&scope, left) != char_kind(&scope, right)) && !left.is_whitespace()
-        //     || right == '\n'
     })
 }
 
