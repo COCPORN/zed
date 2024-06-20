@@ -12,6 +12,7 @@ mod motion;
 mod normal;
 mod object;
 mod replace;
+mod selection_motion;
 mod state;
 mod surrounds;
 mod visual;
@@ -102,9 +103,10 @@ pub fn init(cx: &mut AppContext) {
     // Any time settings change, update vim mode to match. The Vim struct
     // will be initialized as disabled by default, so we filter its commands
     // out when starting up.
-    CommandPaletteFilter::update_global(cx, |filter, _| {
-        filter.hide_namespace(Helix::NAMESPACE);
-    });
+    // CommandPaletteFilter::update_global(cx, |filter, _| {
+    //     filter.hide_namespace(Helix::NAMESPACE);
+    // });
+    //
     Helix::update_global(cx, |helix, cx| {
         helix.set_enabled(HelixModeSetting::get_global(cx).0, cx)
     });
@@ -155,6 +157,7 @@ fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
     normal::register(workspace, cx);
     insert::register(workspace, cx);
     motion::register(workspace, cx);
+    selection_motion::register(workspace, cx);
     command::register(workspace, cx);
     replace::register(workspace, cx);
     object::register(workspace, cx);

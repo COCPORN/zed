@@ -9,14 +9,9 @@ use gpui::WindowContext;
 use language::{Point, Selection};
 use multi_buffer::MultiBufferRow;
 
-pub fn delete_motion(
-    vim: &mut Helix,
-    motion: Motion,
-    times: Option<usize>,
-    cx: &mut WindowContext,
-) {
-    vim.stop_recording();
-    vim.update_active_editor(cx, |vim, editor, cx| {
+pub fn delete_motion(hx: &mut Helix, motion: Motion, times: Option<usize>, cx: &mut WindowContext) {
+    hx.stop_recording();
+    hx.update_active_editor(cx, |hx, editor, cx| {
         let text_layout_details = editor.text_layout_details(cx);
         editor.transact(cx, |editor, cx| {
             editor.set_clip_at_line_ends(false, cx);
@@ -49,7 +44,7 @@ pub fn delete_motion(
                     }
                 });
             });
-            copy_selections_content(vim, editor, motion.linewise(), cx);
+            copy_selections_content(hx, editor, motion.linewise(), cx);
             editor.insert("", cx);
 
             // Fixup cursor position after the deletion
@@ -70,9 +65,9 @@ pub fn delete_motion(
     });
 }
 
-pub fn delete_object(vim: &mut Helix, object: Object, around: bool, cx: &mut WindowContext) {
-    vim.stop_recording();
-    vim.update_active_editor(cx, |vim, editor, cx| {
+pub fn delete_object(hx: &mut Helix, object: Object, around: bool, cx: &mut WindowContext) {
+    hx.stop_recording();
+    hx.update_active_editor(cx, |vim, editor, cx| {
         editor.transact(cx, |editor, cx| {
             editor.set_clip_at_line_ends(false, cx);
             // Emulates behavior in vim where if we expanded backwards to include a newline

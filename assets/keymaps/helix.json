@@ -364,7 +364,7 @@
       "shift-i": "helix::InsertFirstNonWhitespace",
       "a": "helix::InsertAfter",
       "shift-a": "helix::InsertEndOfLine",
-      "x": "helix::DeleteRight",
+      "x": ["editor::SelectLine", "helix::EndOfLine"],
       "shift-x": "helix::DeleteLeft",
       "o": "helix::InsertLineBelow",
       "shift-o": "helix::InsertLineAbove",
