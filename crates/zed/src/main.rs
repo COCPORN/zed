@@ -391,8 +391,6 @@ fn main() {
         OpenListener::set_global(cx, open_listener.clone());
 
         settings::init(cx);
-        handle_settings_file_changes(user_settings_file_rx, cx);
-        handle_keymap_file_changes(user_keymap_file_rx, cx);
 
         client::init_settings(cx);
         let client = Client::production(cx);
@@ -485,6 +483,9 @@ fn main() {
                 }
             }
         }
+
+        handle_settings_file_changes(user_settings_file_rx, cx);
+        handle_keymap_file_changes(user_keymap_file_rx, cx);
 
         let app_state = app_state.clone();
         cx.spawn(move |cx| async move {
