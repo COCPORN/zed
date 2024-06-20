@@ -15,17 +15,17 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
 }
 
 fn normal_before(_: &mut Workspace, action: &NormalBefore, cx: &mut ViewContext<Workspace>) {
-    let should_repeat = Helix::update(cx, |vim, cx| {
-        if vim.state().active_operator().is_some() {
-            vim.update_state(|state| state.operator_stack.clear());
-            vim.sync_helix_settings(cx);
+    let should_repeat = Helix::update(cx, |hx, cx| {
+        if hx.state().active_operator().is_some() {
+            hx.update_state(|state| state.operator_stack.clear());
+            hx.sync_helix_settings(cx);
             return false;
         }
-        let count = vim.take_count(cx).unwrap_or(1);
-        vim.stop_recording_immediately(action.boxed_clone());
-        if count <= 1 || vim.workspace_state.replaying {
-            create_mark(vim, "^".into(), false, cx);
-            vim.update_active_editor(cx, |_, editor, cx| {
+        let count = hx.take_count(cx).unwrap_or(1);
+        hx.stop_recording_immediately(action.boxed_clone());
+        if count <= 1 || hx.workspace_state.replaying {
+            create_mark(hx, "^".into(), false, cx);
+            hx.update_active_editor(cx, |_, editor, cx| {
                 editor.dismiss_menus_and_popups(false, cx);
                 editor.change_selections(Some(Autoscroll::fit()), cx, |s| {
                     s.move_cursors_with(|map, mut cursor, _| {
@@ -34,7 +34,7 @@ fn normal_before(_: &mut Workspace, action: &NormalBefore, cx: &mut ViewContext<
                     });
                 });
             });
-            vim.switch_mode(Mode::Normal, false, cx);
+            hx.switch_mode(Mode::Normal, false, cx);
             false
         } else {
             true

@@ -285,6 +285,8 @@ impl Helix {
                 // When following someone, don't switch vim mode.
                 && editor.leader_peer_id().is_none()
         {
+            // This switches automatically into visual mode, which is perhaps
+            // OK for VIM, but
             self.switch_mode(Mode::Visual, true, cx);
         }
 
@@ -801,11 +803,11 @@ impl Helix {
                 }
             }
         } else if state.mode == Mode::Normal && newest.start != newest.end {
-            if matches!(newest.goal, SelectionGoal::HorizontalRange { .. }) {
-                self.switch_mode(Mode::VisualBlock, false, cx);
-            } else {
-                self.switch_mode(Mode::Visual, false, cx)
-            }
+            // if matches!(newest.goal, SelectionGoal::HorizontalRange { .. }) {
+            //     self.switch_mode(Mode::VisualBlock, false, cx);
+            // } else {
+            //     self.switch_mode(Mode::Visual, false, cx)
+            // }
         } else if newest.start == newest.end
             && !is_multicursor
             && [Mode::Visual, Mode::VisualLine, Mode::VisualBlock].contains(&state.mode)

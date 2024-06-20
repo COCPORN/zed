@@ -49,9 +49,9 @@
       "|": "helix::GoToColumn",
 
       // Word motions
-      "w": "helix::NextWordStart",
+      "w": "helix::MoveNextWordStart",
       "e": "helix::NextWordEnd",
-      "b": "helix::PreviousWordStart",
+      "b": "helix::MovePrevWordStart",
       "g e": "helix::PreviousWordEnd",
 
       // Subword motions
@@ -504,7 +504,7 @@
   {
     "context": "Editor && HelixObject",
     "bindings": {
-      "w": "helix::Word",
+      "w": "helix::MoveNextWordStart",
       "shift-w": [
         "helix::Word",
         {

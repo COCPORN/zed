@@ -192,23 +192,23 @@ pub fn normal_motion(
     times: Option<usize>,
     cx: &mut WindowContext,
 ) {
-    Helix::update(cx, |vim, cx| {
+    Helix::update(cx, |hx, cx| {
         match operator {
-            None => move_cursor(vim, motion, times, cx),
-            Some(Operator::Change) => change_motion(vim, motion, times, cx),
-            Some(Operator::Delete) => delete_motion(vim, motion, times, cx),
-            Some(Operator::Yank) => yank_motion(vim, motion, times, cx),
+            None => move_cursor(hx, motion, times, cx),
+            Some(Operator::Change) => change_motion(hx, motion, times, cx),
+            Some(Operator::Delete) => delete_motion(hx, motion, times, cx),
+            Some(Operator::Yank) => yank_motion(hx, motion, times, cx),
             Some(Operator::AddSurrounds { target: None }) => {}
-            Some(Operator::Indent) => indent_motion(vim, motion, times, IndentDirection::In, cx),
-            Some(Operator::Outdent) => indent_motion(vim, motion, times, IndentDirection::Out, cx),
+            Some(Operator::Indent) => indent_motion(hx, motion, times, IndentDirection::In, cx),
+            Some(Operator::Outdent) => indent_motion(hx, motion, times, IndentDirection::Out, cx),
             Some(Operator::Lowercase) => {
-                change_case_motion(vim, motion, times, CaseTarget::Lowercase, cx)
+                change_case_motion(hx, motion, times, CaseTarget::Lowercase, cx)
             }
             Some(Operator::Uppercase) => {
-                change_case_motion(vim, motion, times, CaseTarget::Uppercase, cx)
+                change_case_motion(hx, motion, times, CaseTarget::Uppercase, cx)
             }
             Some(Operator::OppositeCase) => {
-                change_case_motion(vim, motion, times, CaseTarget::OppositeCase, cx)
+                change_case_motion(hx, motion, times, CaseTarget::OppositeCase, cx)
             }
             Some(operator) => {
                 // Can't do anything for text objects, Ignoring
@@ -219,27 +219,27 @@ pub fn normal_motion(
 }
 
 pub fn normal_object(object: Object, cx: &mut WindowContext) {
-    Helix::update(cx, |vim, cx| {
+    Helix::update(cx, |hx, cx| {
         let mut waiting_operator: Option<Operator> = None;
-        match vim.maybe_pop_operator() {
-            Some(Operator::Object { around }) => match vim.maybe_pop_operator() {
-                Some(Operator::Change) => change_object(vim, object, around, cx),
-                Some(Operator::Delete) => delete_object(vim, object, around, cx),
-                Some(Operator::Yank) => yank_object(vim, object, around, cx),
+        match hx.maybe_pop_operator() {
+            Some(Operator::Object { around }) => match hx.maybe_pop_operator() {
+                Some(Operator::Change) => change_object(hx, object, around, cx),
+                Some(Operator::Delete) => delete_object(hx, object, around, cx),
+                Some(Operator::Yank) => yank_object(hx, object, around, cx),
                 Some(Operator::Indent) => {
-                    indent_object(vim, object, around, IndentDirection::In, cx)
+                    indent_object(hx, object, around, IndentDirection::In, cx)
                 }
                 Some(Operator::Outdent) => {
-                    indent_object(vim, object, around, IndentDirection::Out, cx)
+                    indent_object(hx, object, around, IndentDirection::Out, cx)
                 }
                 Some(Operator::Lowercase) => {
-                    change_case_object(vim, object, around, CaseTarget::Lowercase, cx)
+                    change_case_object(hx, object, around, CaseTarget::Lowercase, cx)
                 }
                 Some(Operator::Uppercase) => {
-                    change_case_object(vim, object, around, CaseTarget::Uppercase, cx)
+                    change_case_object(hx, object, around, CaseTarget::Uppercase, cx)
                 }
                 Some(Operator::OppositeCase) => {
-                    change_case_object(vim, object, around, CaseTarget::OppositeCase, cx)
+                    change_case_object(hx, object, around, CaseTarget::OppositeCase, cx)
                 }
                 Some(Operator::AddSurrounds { target: None }) => {
                     waiting_operator = Some(Operator::AddSurrounds {
@@ -254,7 +254,7 @@ pub fn normal_object(object: Object, cx: &mut WindowContext) {
                 waiting_operator = Some(Operator::DeleteSurrounds);
             }
             Some(Operator::ChangeSurrounds { target: None }) => {
-                if check_and_move_to_valid_bracket_pair(vim, object, cx) {
+                if check_and_move_to_valid_bracket_pair(hx, object, cx) {
                     waiting_operator = Some(Operator::ChangeSurrounds {
                         target: Some(object),
                     });
@@ -264,20 +264,20 @@ pub fn normal_object(object: Object, cx: &mut WindowContext) {
                 // Can't do anything with change/delete/yank/surrounds and text objects. Ignoring
             }
         }
-        vim.clear_operator(cx);
+        hx.clear_operator(cx);
         if let Some(operator) = waiting_operator {
-            vim.push_operator(operator, cx);
+            hx.push_operator(operator, cx);
         }
     });
 }
 
 pub(crate) fn move_cursor(
-    vim: &mut Helix,
+    hx: &mut Helix,
     motion: Motion,
     times: Option<usize>,
     cx: &mut WindowContext,
 ) {
-    vim.update_active_editor(cx, |_, editor, cx| {
+    hx.update_active_editor(cx, |_, editor, cx| {
         let text_layout_details = editor.text_layout_details(cx);
         editor.change_selections(Some(Autoscroll::fit()), cx, |s| {
             s.move_cursors_with(|map, cursor, goal| {
