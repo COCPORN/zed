@@ -15,7 +15,8 @@ actions!(
         MoveNextWordStart,
         MovePrevWordStart,
         MoveNextWordEnd,
-        MoveNextLongWordStart
+        MoveNextLongWordStart,
+        ExtendLineBelow,
     ]
 );
 
