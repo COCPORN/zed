@@ -1,16 +1,11 @@
-use crate::{
-    normal::{mark::create_mark, repeat},
-    state::Mode,
-    Helix,
-};
+use crate::Helix;
 use editor::{
-    actions,
     display_map::DisplaySnapshot,
-    movement::{find_boundary, find_boundary_exclusive, find_boundary_point, FindRange},
+    movement::{find_boundary, FindRange},
     scroll::Autoscroll,
-    Bias, DisplayPoint, Editor,
+    DisplayPoint,
 };
-use gpui::{actions, Action, ViewContext};
+use gpui::{actions, ViewContext};
 use language::{char_kind, SelectionGoal};
 use workspace::Workspace;
 
@@ -29,11 +24,7 @@ pub fn register(workspace: &mut Workspace, _: &mut ViewContext<Workspace>) {
     workspace.register_action(move_prev_word_start);
 }
 
-fn move_next_word_start(
-    _: &mut Workspace,
-    action: &MoveNextWordStart,
-    cx: &mut ViewContext<Workspace>,
-) {
+fn move_next_word_start(_: &mut Workspace, _: &MoveNextWordStart, cx: &mut ViewContext<Workspace>) {
     Helix::update(cx, |hx, cx| {
         hx.update_active_editor(cx, |_, editor, cx| {
             editor.change_selections(Some(Autoscroll::fit()), cx, |s| s.try_cancel());
@@ -65,11 +56,7 @@ fn select_to_next_word_start(map: &DisplaySnapshot, point: DisplayPoint) -> Disp
     })
 }
 
-fn move_prev_word_start(
-    _: &mut Workspace,
-    action: &MovePrevWordStart,
-    cx: &mut ViewContext<Workspace>,
-) {
+fn move_prev_word_start(_: &mut Workspace, _: &MovePrevWordStart, cx: &mut ViewContext<Workspace>) {
     Helix::update(cx, |hx, cx| {
         hx.update_active_editor(cx, |_, editor, cx| {
             editor.cancel(&editor::actions::Cancel, cx);
