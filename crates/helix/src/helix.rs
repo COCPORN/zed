@@ -157,7 +157,7 @@ fn register(workspace: &mut Workspace, cx: &mut ViewContext<Workspace>) {
     normal::register(workspace, cx);
     insert::register(workspace, cx);
     motion::register(workspace, cx);
-    selection_motion::register(workspace, cx);
+    helix_motion::register(workspace, cx);
     command::register(workspace, cx);
     replace::register(workspace, cx);
     object::register(workspace, cx);

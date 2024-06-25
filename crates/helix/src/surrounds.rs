@@ -26,10 +26,10 @@ impl<'de> Deserialize<'de> for SurroundsType {
 }
 
 pub fn add_surrounds(text: Arc<str>, target: SurroundsType, cx: &mut WindowContext) {
-    Helix::update(cx, |vim, cx| {
-        vim.stop_recording();
-        let count = vim.take_count(cx);
-        vim.update_active_editor(cx, |_, editor, cx| {
+    Helix::update(cx, |Helix, cx| {
+        Helix.stop_recording();
+        let count = Helix.take_count(cx);
+        Helix.update_active_editor(cx, |_, editor, cx| {
             let text_layout_details = editor.text_layout_details(cx);
             editor.transact(cx, |editor, cx| {
                 editor.set_clip_at_line_ends(false, cx);
@@ -40,6 +40,7 @@ pub fn add_surrounds(text: Arc<str>, target: SurroundsType, cx: &mut WindowConte
                         start: text.to_string(),
                         end: text.to_string(),
                         close: true,
+                        surround: true,
                         newline: false,
                     },
                 };
@@ -114,13 +115,13 @@ pub fn add_surrounds(text: Arc<str>, target: SurroundsType, cx: &mut WindowConte
                 });
             });
         });
-        vim.switch_mode(Mode::Normal, false, cx);
+        Helix.switch_mode(Mode::Normal, false, cx);
     });
 }
 
 pub fn delete_surrounds(text: Arc<str>, cx: &mut WindowContext) {
-    Helix::update(cx, |vim, cx| {
-        vim.stop_recording();
+    Helix::update(cx, |Helix, cx| {
+        Helix.stop_recording();
 
         // only legitimate surrounds can be removed
         let pair = match find_surround_pair(&all_support_surround_pair(), &text) {
@@ -133,7 +134,7 @@ pub fn delete_surrounds(text: Arc<str>, cx: &mut WindowContext) {
         };
         let surround = pair.end != *text;
 
-        vim.update_active_editor(cx, |_, editor, cx| {
+        Helix.update_active_editor(cx, |_, editor, cx| {
             editor.transact(cx, |editor, cx| {
                 editor.set_clip_at_line_ends(false, cx);
 
@@ -215,9 +216,9 @@ pub fn delete_surrounds(text: Arc<str>, cx: &mut WindowContext) {
 
 pub fn change_surrounds(text: Arc<str>, target: Object, cx: &mut WindowContext) {
     if let Some(will_replace_pair) = object_to_bracket_pair(target) {
-        Helix::update(cx, |vim, cx| {
-            vim.stop_recording();
-            vim.update_active_editor(cx, |_, editor, cx| {
+        Helix::update(cx, |Helix, cx| {
+            Helix.stop_recording();
+            Helix.update_active_editor(cx, |_, editor, cx| {
                 editor.transact(cx, |editor, cx| {
                     editor.set_clip_at_line_ends(false, cx);
 
@@ -227,6 +228,7 @@ pub fn change_surrounds(text: Arc<str>, target: Object, cx: &mut WindowContext) 
                             start: text.to_string(),
                             end: text.to_string(),
                             close: true,
+                            surround: true,
                             newline: false,
                         },
                     };
@@ -329,13 +331,13 @@ pub fn change_surrounds(text: Arc<str>, target: Object, cx: &mut WindowContext) 
 /// If a valid pair of brackets is found, the method returns `true` and the cursor is automatically moved to the start of the bracket pair.
 /// If no valid pair of brackets is found for any cursor, the method returns `false`.
 pub fn check_and_move_to_valid_bracket_pair(
-    vim: &mut Helix,
+    Helix: &mut Helix,
     object: Object,
     cx: &mut WindowContext,
 ) -> bool {
     let mut valid = false;
     if let Some(pair) = object_to_bracket_pair(object) {
-        vim.update_active_editor(cx, |_, editor, cx| {
+        Helix.update_active_editor(cx, |_, editor, cx| {
             editor.transact(cx, |editor, cx| {
                 editor.set_clip_at_line_ends(false, cx);
                 let (display_map, selections) = editor.selections.all_adjusted_display(cx);
@@ -388,54 +390,63 @@ fn all_support_surround_pair() -> Vec<BracketPair> {
             start: "{".into(),
             end: "}".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "'".into(),
             end: "'".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "`".into(),
             end: "`".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "\"".into(),
             end: "\"".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "(".into(),
             end: ")".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "|".into(),
             end: "|".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "[".into(),
             end: "]".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "{".into(),
             end: "}".into(),
             close: true,
+            surround: true,
             newline: false,
         },
         BracketPair {
             start: "<".into(),
             end: ">".into(),
             close: true,
+            surround: true,
             newline: false,
         },
     ];
@@ -461,48 +472,56 @@ fn object_to_bracket_pair(object: Object) -> Option<BracketPair> {
             start: "'".to_string(),
             end: "'".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::BackQuotes => Some(BracketPair {
             start: "`".to_string(),
             end: "`".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::DoubleQuotes => Some(BracketPair {
             start: "\"".to_string(),
             end: "\"".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::VerticalBars => Some(BracketPair {
             start: "|".to_string(),
             end: "|".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::Parentheses => Some(BracketPair {
             start: "(".to_string(),
             end: ")".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::SquareBrackets => Some(BracketPair {
             start: "[".to_string(),
             end: "]".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::CurlyBrackets => Some(BracketPair {
             start: "{".to_string(),
             end: "}".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         Object::AngleBrackets => Some(BracketPair {
             start: "<".to_string(),
             end: ">".to_string(),
             close: true,
+            surround: true,
             newline: false,
         }),
         _ => None,
@@ -513,11 +532,11 @@ fn object_to_bracket_pair(object: Object) -> Option<BracketPair> {
 mod test {
     use indoc::indoc;
 
-    use crate::{state::Mode, test::VimTestContext};
+    use crate::{state::Mode, test::HelixTestContext};
 
     #[gpui::test]
     async fn test_add_surrounds(cx: &mut gpui::TestAppContext) {
-        let mut cx = VimTestContext::new(cx, true).await;
+        let mut cx = HelixTestContext::new(cx, true).await;
 
         // test add surrounds with arround
         cx.set_state(
@@ -665,7 +684,7 @@ mod test {
 
     #[gpui::test]
     async fn test_delete_surrounds(cx: &mut gpui::TestAppContext) {
-        let mut cx = VimTestContext::new(cx, true).await;
+        let mut cx = HelixTestContext::new(cx, true).await;
 
         // test delete surround
         cx.set_state(
@@ -829,7 +848,7 @@ mod test {
 
     #[gpui::test]
     async fn test_change_surrounds(cx: &mut gpui::TestAppContext) {
-        let mut cx = VimTestContext::new(cx, true).await;
+        let mut cx = HelixTestContext::new(cx, true).await;
 
         cx.set_state(
             indoc! {"
@@ -939,7 +958,7 @@ mod test {
 
     #[gpui::test]
     async fn test_surrounds(cx: &mut gpui::TestAppContext) {
-        let mut cx = VimTestContext::new(cx, true).await;
+        let mut cx = HelixTestContext::new(cx, true).await;
 
         cx.set_state(
             indoc! {"
